@@ -79,5 +79,16 @@ def verify_otp(request):
             })
         else:
             return Response({'error': 'Invalid OTP or OTP expired'}, status=status.HTTP_400_BAD_REQUEST)
-    except UserProfile.DoesNotExist:
-        return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            "code": status.HTTP_401_UNAUTHORIZED,
+            "message": str(e),
+            "status_code": 401,
+            "errors": [
+                {
+                    "status_code": 401,
+                    "message": str(e)
+                }
+            ]
+        })
+        
