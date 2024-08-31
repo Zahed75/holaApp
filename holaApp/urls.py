@@ -3,9 +3,10 @@ from django.urls import path,include
 from django.conf.urls.static import static
 from django.conf import settings
 
+
 urlpatterns = [
-    path('admin', admin.site.urls),
-    path('',include('auths.urls')),
+    path('admin/', admin.site.urls),
+    path('auth/', include('auths.urls')),
     path('',include('auths.urls')),
     path('',include('outlet.urls')),
     path('',include('order.urls')),
@@ -17,6 +18,7 @@ urlpatterns = [
     path('',include('category.urls')),
     path('',include('customer.urls')),
     path('',include('discount.urls')),
+
 
 ]
 

@@ -19,6 +19,7 @@ class BaseUser(models.Model):
     class Meta:
         abstract = True
 
+
 # Manager for creating users and superusers
 class UserManager(BaseUserManager):
     def create_user(self, email, password, full_name, **extra_fields):
@@ -35,6 +36,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(email, password, full_name, **extra_fields)
 
+
 # Admin user model
 class AdminUser(AbstractBaseUser, BaseUser):
     objects = UserManager()
@@ -46,6 +48,7 @@ class AdminUser(AbstractBaseUser, BaseUser):
         verbose_name = 'Admin User'
         verbose_name_plural = 'Admin Users'
 
+
 # Customer model
 class Customer(BaseUser):
     phone_number = models.CharField(max_length=15, unique=True)
@@ -56,6 +59,7 @@ class Customer(BaseUser):
 
     def __str__(self):
         return self.full_name
+
 
 # OutletManager model
 class OutletManager(BaseUser):

@@ -6,8 +6,7 @@ from rest_framework import status
 from rest_framework.generics import UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from django.contrib.auth.models import User
-from django.contrib.auth.hashers import check_password
+
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, UntypedToken, Token
 from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -31,11 +30,11 @@ from django.contrib.auth.decorators import login_required
 
 
 
-@api_view()
+@api_view(['POST'])
 
 def home(request):
     return Response({
-        status:200,
-        message:"Hello Im Back"
+        "status":200,
+        "Response":"Hello Im Back"
     })
 
