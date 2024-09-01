@@ -4,7 +4,7 @@ from .models import *
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ['id','user', 'categoryName', 'parentCategory', 'coverImage', 'slug']
+        fields = ['categoryName','id','user','parentCategory', 'coverImage', 'slug']
         read_only_fields = ['id', 'slug']  
 
     def create(self, validated_data):

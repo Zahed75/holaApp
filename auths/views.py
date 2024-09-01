@@ -25,7 +25,7 @@ def register_user(request):
             profile.save()
 
             return Response({
-                'user_id': profile.unique_user_id,  # Return the unique user ID here
+                'id': profile.unique_user_id,  # Return the unique user ID here
                 'role': profile.role,
                 'phone_number': profile.phone_number,
                 'otp': profile.otp,
@@ -72,7 +72,7 @@ def verify_otp(request):
             refresh = RefreshToken.for_user(profile.user)
             return Response({
                 'user': {
-                    'id': profile.user.id,
+                    'id': profile.unique_user_id,
                     'role': profile.role,
                     'phone_number': profile.phone_number,
                     'access': str(refresh.access_token),
