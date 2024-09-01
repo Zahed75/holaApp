@@ -1,6 +1,7 @@
 
 from .modules import *
 
+
 API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
 
 @api_view(['POST'])
@@ -17,18 +18,14 @@ def register_user(request):
             message = f"Your OTP code is {otp}. Please use this to verify your account."
             response = send_sms(request.data.get('phone_number'), message, API_KEY)
 
-            # Create UserProfile with the fixed role
-            profile = UserProfile.objects.create(
-                user=user,
-                role=request.data.get('role'),
-                phone_number=request.data.get('phone_number'),
-                otp=otp,
-                otp_created_at=timezone.now(),
-                otp_verified=False  
-            )
+            # Access the UserProfile created within the serializer
+            profile = user.userprofile  # This accesses the UserProfile associated with the User
+            profile.otp = otp
+            profile.otp_created_at = timezone.now()
+            profile.save()
 
             return Response({
-                'id': user.id,
+                'user_id': profile.unique_user_id,  # Return the unique user ID here
                 'role': profile.role,
                 'phone_number': profile.phone_number,
                 'otp': profile.otp,
@@ -50,6 +47,11 @@ def register_user(request):
                 }
             ]
         })
+
+
+
+
+
 
 
 
@@ -91,6 +93,12 @@ def verify_otp(request):
                 }
             ]
         })
+    
+
+
+
+
+    
         
 @api_view(['POST'])
 def resend_otp(request):
