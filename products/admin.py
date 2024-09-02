@@ -8,7 +8,7 @@ class InventoryInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('productName', 'category', 'regularPrice', 'salePrice', 'weight',)
+    list_display = ('id','productName', 'category', 'regularPrice', 'salePrice', 'weight',)
 
     search_fields = ('productName', 'seoTitle', 'seoDescription')
 
