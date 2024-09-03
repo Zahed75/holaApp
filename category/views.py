@@ -164,7 +164,7 @@ def getCategoryById(request,id):
         categorys = Category.objects.get(id=id)
         data_serializer = CategorySerializer(categorys,many=False)
         return Response({
-              'code': status.HTTP_200_OK,
+             'code': status.HTTP_200_OK,
             'message': 'Data retrieved successfully',
             'data': data_serializer.data
         })

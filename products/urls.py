@@ -14,5 +14,6 @@ urlpatterns = [
     path('api/deleteProduct/<id>',deleteProduct),
     path('api/deleteInventoryByProductId/<id>',InventoryDelete),
     path('api/get-allProducts',getProducts),
+    path('api/get-products/<id>',getProductsbyId)
  
 ]
