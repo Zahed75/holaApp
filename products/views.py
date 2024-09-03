@@ -72,3 +72,137 @@ def addInventory(request, id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+
+
+@api_view(['PUT'])
+@parser_classes([MultiPartParser])
+@permission_classes([IsAuthenticated])
+def updateProduct(request,id):
+
+    try:
+        productObj = Product.objects.get(id=id)
+        
+        serializer = ProductSerializer(productObj,data=request.data,partial=True,context={'request':request})
+        if not serializer.is_valid():
+            return Response({
+                'status': 400,
+                'payload': serializer.errors, 
+                'message': 'Something Went Wrong'
+            })
+        serializer.save()
+        print(serializer)
+        return Response({
+            'status': 200, 
+            'payload': serializer.data,
+            'message': "Product updated successfully"
+        })
+
+    except Exception as e:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })
+    
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+
+def updateInventory(request,id):
+
+    try:
+        inventory = Inventory.objects.get(id=id)
+        serializers = InventorySerializer(inventory,data=request.data,partial=True,context={'request':request})
+        if not serializers.is_valid():
+            serializers.save()
+            return Response({
+                 'status': 400,
+                'payload': serializers.errors, 
+                'message': 'Something Went Wrong'
+            })
+        serializers.save()
+        return Response({
+            'status': 200, 
+            'payload': serializers.data,
+            'message': "Inventroy updated successfully"
+        })
+    except Exception as e:
+         return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })
+
+
+
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+
+def deleteProduct(request,id):
+    try:
+        prodcutObj = Product.objects.get(id=id)
+        prodcutObj.delete()
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': 'Product Deleted Successfully!',
+            'category_id': id 
+        },status=status.HTTP_200_OK)
+    
+    except Product.DoesNotExist:
+         return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Product not found!'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+           return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+
+def InventoryDelete(request,id):
+    try:
+        inventoryObjects = Inventory.objects.get(id=id)
+        inventoryObjects.delete()
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': 'Inventory Deleted Successfully!',
+            'category_id': id 
+        },status=status.HTTP_200_OK)
+    
+    
+    except Exception as e:
+            return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })
+
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getProducts(request):
+    try:
+        products = Product.objects.all()
+        data_serializer = ProductSerializer(products,many=True)
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message':'Get All Products Fetched Successfully',
+            'data':data_serializer.data
+        })
+    except Exception as e:
+          return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })
+
+
+    
