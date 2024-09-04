@@ -128,11 +128,11 @@ def get_allCategory(request):
 @permission_classes([IsAuthenticated])
 def getCategoryById(request, categoryName):
     try:
-        # Using get() to retrieve a single object by categoryName
+        
         category = Category.objects.get(categoryName=categoryName)
         print("Check:", category)
         
-        # Serializing the single object
+       
         data_serializer = CategorySerializer(category, many=False)
         
         return Response({

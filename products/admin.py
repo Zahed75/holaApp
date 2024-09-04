@@ -1,13 +1,13 @@
 from django.contrib import admin
 from .models import Product, Inventory
-
+from unfold.admin import ModelAdmin as unfoldModelAdmin
 
 class InventoryInline(admin.TabularInline):
     model = Inventory
     extra = 1
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(unfoldModelAdmin):
     list_display = ('id','productName', 'category', 'regularPrice', 'salePrice', 'weight',)
 
     search_fields = ('productName', 'seoTitle', 'seoDescription')
@@ -37,7 +37,10 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(Inventory)
-class InventoryAdmin(admin.ModelAdmin):
-    list_display = ('id','product', 'size', 'quantity', 'barCode', 'available')
+class InventoryAdmin(unfoldModelAdmin):
+    list_display = ('product', 'size', 'quantity', 'barCode', 'available')
     search_fields = ('product__productName', 'size', 'barCode')
-    list_filter = ('size', 'available')
+    ordering = ('product', 'size')
+    list_filter = ('available',)
+
+
