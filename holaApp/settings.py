@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'rest_framework.authtoken',
     'auths',
     'category',
     'customer',
@@ -188,6 +187,13 @@ SIMPLE_JWT = {
 
 
 
+
+
+# custom ADMIN
+
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -219,27 +225,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "https://exam.poc.ac",
-    "https://www.exam.poc.ac",
-    # =======================
-    # "https://www.examapp.poc.ac",
-    # "https://examapp.poc.ac",
-    # =============================
-    # =============Admin=============
-    "https://www.examadmin.poc.ac",
-    "https://examadmin.poc.ac",
-    # =======================
-
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    # ===========================
-    "http://127.0.0.1:8081",
-    "http://localhost:8081",
-
-    # =======Student App Server
-    # ===========================
-    "https://www.portal.poc.ac",
-    "https://portal.poc.ac",
+   
+    "http://127.0.0.1:3000",
+    
 
 ]
 
