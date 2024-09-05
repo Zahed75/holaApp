@@ -38,6 +38,7 @@ def createOutlet(request):
 
 
 
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 
@@ -65,3 +66,51 @@ def updateOutlet(request,id):
         })
 
 
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+
+def getAllOutlets(request):
+    try:
+        outlets = Outlet.objects.all()
+        data_serializers = OutletSerializer(outlets,many=True)
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message':'Get All Products Fetched Successfully',
+            'data':data_serializers.data
+        })
+    
+    except Exception as e:
+       return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })
+ 
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getOutletById(request, id):
+    try:
+        outlet = Outlet.objects.get(id=id)
+        data_serializer = OutletSerializer(outlet, many=False)  # Use the updated serializer
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': 'Data retrieved successfully',
+            'data': data_serializer.data
+        })
+    
+    except Outlet.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Outlet not found'
+        })
+    
+    except Exception as e:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })

@@ -9,5 +9,7 @@ urlpatterns = [
  
   path('api/create-outlet',createOutlet),
   path('api/update-outlet/<id>',updateOutlet),
-
+  path('api/get-all-outlets/',getAllOutlets),
+  path('api/get-outlet/<id>',getOutletById),
+  
 ]

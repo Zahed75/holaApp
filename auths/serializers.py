@@ -34,15 +34,13 @@ class OutletManagerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['phone_number','first_name', 'last_name', 'email']
+        fields = ['phone_number', 'first_name', 'last_name', 'email']
 
-    def create(self, validated_data):
-        user_data = validated_data.pop('user')
-        user = User.objects.create_user(
-            username=user_data['email'],  # assuming email is used as the username
-            first_name=user_data['first_name'],
-            last_name=user_data['last_name'],
-            email=user_data['email']
-        )
-        user_profile = UserProfile.objects.create(user=user, role='outlet_manager', **validated_data)
-        return user_profile
+    def to_representation(self, instance):
+        """Override to_representation to include the user's details."""
+        representation = super().to_representation(instance)
+        # Add the user-related fields
+        representation['first_name'] = instance.user.first_name
+        representation['last_name'] = instance.user.last_name
+        representation['email'] = instance.user.email
+        return representation
