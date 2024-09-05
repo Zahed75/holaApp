@@ -3,6 +3,7 @@ from .modules import *
 
 
 API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
+
 @api_view(['POST'])
 def register_user(request):
     try:
@@ -223,3 +224,41 @@ def tokenVerify(request):
                 }
             ]
         })
+
+
+
+API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
+class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = (permissions.AllowAny,) 
+
+    def post(self, request, *args, **kwargs):
+        phone_number = request.data.get('phone_number')
+
+        try:
+            # Check if the user with the phone number exists
+            user_profile = UserProfile.objects.get(phone_number=phone_number)
+            user = user_profile.user
+
+            # Generate a 4-digit OTP
+            otp = str(random.randint(1000, 9999))
+            user_profile.otp = otp
+            user_profile.otp_created_at = timezone.now()
+            user_profile.save()
+
+            # Send OTP via SMS
+            message = f"Your OTP is {otp}. It is valid for 5 minutes."
+            send_sms(phone_number, message, api_key=API_KEY,)
+
+            return Response({
+                "code": status.HTTP_200_OK,
+                "message": "OTP sent successfully. Please verify to continue.",
+                "otp":otp
+            })
+
+        except UserProfile.DoesNotExist:
+            return Response({
+                "code": status.HTTP_400_BAD_REQUEST,
+                "message": "User with this phone number does not exist."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+

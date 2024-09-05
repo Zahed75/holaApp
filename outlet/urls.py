@@ -7,6 +7,7 @@ from outlet.views import *
 
 urlpatterns = [
  
-  path('api/create-outlet',createOutlet)
+  path('api/create-outlet',createOutlet),
+  path('api/update-outlet/<id>',updateOutlet),
 
 ]

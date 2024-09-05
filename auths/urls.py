@@ -16,7 +16,8 @@ urlpatterns = [
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('api/register-phone/', register_user),
     path('api/verify-otp/',verify_otp),
-    path('api/resendOtp',resend_otp)
+    path('api/resendOtp/',resend_otp),
+    path('api/tokenPair/',CustomTokenObtainPairView.as_view()),
 
 
 ]

@@ -35,3 +35,33 @@ def createOutlet(request):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+
+def updateOutlet(request,id):
+    try:
+        outletObj = Outlet.objects.get(id=id)
+        serializers = OutletSerializer(outletObj,data=request.data,partial=True,context={'request':request})
+        if not serializers.is_valid():
+            return Response({
+                'status': 400,
+                'payload': serializers.errors, 
+                'message': 'Something Went Wrong'
+            })
+        serializers.save()
+        return Response({
+            'status': 200, 
+            'payload': serializers.data,
+            'message': "Outlet updated successfully"
+        })
+    
+    except Exception as e:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })
+
+
