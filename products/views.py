@@ -169,6 +169,7 @@ def deleteProduct(request,id):
         })
 
 
+
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 
