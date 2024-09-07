@@ -1,9 +1,9 @@
 from django.contrib import admin
 from .models import Category
 
-from unfold.admin import ModelAdmin as unfoldModelAdmin
+# from unfold.admin import ModelAdmin as unfoldModelAdmin
 
-class CategoryModelAdmin(unfoldModelAdmin):
+class CategoryModelAdmin(admin.ModelAdmin):
     list_display = ('id','slug','categoryName', 'parentCategory', 'coverImage')  
 
     prepopulated_fields = {"slug": ("categoryName",)} 
