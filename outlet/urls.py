@@ -11,5 +11,5 @@ urlpatterns = [
   path('api/update-outlet/<id>',updateOutlet),
   path('api/get-all-outlets/',getAllOutlets),
   path('api/get-outlet/<id>',getOutletById),
-  
+  path('api/delete-outlet/<id>',deleteOutlet)
 ]

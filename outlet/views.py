@@ -114,3 +114,29 @@ def getOutletById(request, id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+
+def  deleteOutlet(request,id):
+    try:
+        OutletObj = Outlet.objects.get(id=id)
+        OutletObj.delete()
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': 'Product Deleted Successfully!',
+            'category_id': id 
+        },status=status.HTTP_200_OK)
+    
+    except Outlet.DoesNotExist:
+          return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Outlet not found!'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        })

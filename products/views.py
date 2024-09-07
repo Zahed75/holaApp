@@ -34,6 +34,8 @@ def createProduct(request):
         })
     
 
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def addInventory(request, id):
@@ -105,6 +107,9 @@ def updateProduct(request,id):
             'message': str(e)
         })
     
+
+
+
 
 
 @api_view(['PUT'])
@@ -203,6 +208,8 @@ def getProducts(request):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
 
 
 

@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-%isa=p4jpn7ep1dee2)l1xlzk5(r29!_8@^^@&1ev$!-q$z+8^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-PRODUCTION = False
+PRODUCTION = True
 ALLOWED_HOSTS = ['*']
 
 
@@ -85,16 +85,16 @@ WSGI_APPLICATION = 'holaApp.wsgi.application'
 
 if PRODUCTION:
     # Production database
- DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "mydatabase",
-        "USER": "mydatabaseuser",
-        "PASSWORD": "mypassword",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+  DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'holaGo',
+            'USER': 'holaGo',
+            'PASSWORD': 'pk6cERSKRM8WBsEx',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+        }
     }
-}
 
 
 else:
