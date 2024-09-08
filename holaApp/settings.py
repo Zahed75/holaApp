@@ -87,9 +87,9 @@ if PRODUCTION:
   DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'holaApp',
-            'USER': 'holaApp',
-            'PASSWORD': 'BGPRw25dkcSEicaZ',
+            'NAME': 'holaGO',
+            'USER': 'holaGO',
+            'PASSWORD': 'RcajCkd2iaLyKhPC',
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }
