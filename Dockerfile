@@ -2,21 +2,24 @@
 FROM python:3.12
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 # Set work directory
 WORKDIR /app
 
-# Copy the requirements.txt file and install dependencies
+# Install dependencies
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy the project files to the container
+# Copy the rest of the application
 COPY . /app/
 
-# Expose the port on which the Django app will run
+# Run the Django collectstatic command to gather static files
+RUN python manage.py collectstatic --noinput
+
+# Expose the Django app's port
 EXPOSE 8000
 
-# Start the Django development server
+# Start the Django app server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
