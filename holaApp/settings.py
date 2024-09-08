@@ -84,16 +84,16 @@ WSGI_APPLICATION = 'holaApp.wsgi.application'
 
 if PRODUCTION:
     # Production database
-  DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'holaGO',
-            'USER': 'holaGO',
-            'PASSWORD': 'x4C3snBywwmAN35y',
-            'HOST': '127.0.0.1',
-            'PORT': '3306',
-        }
+ DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': 'db',  # This should match the service name of the db in docker-compose
+        'PORT': '3306',
     }
+}
 
 
 else:
