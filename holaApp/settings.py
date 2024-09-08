@@ -90,7 +90,7 @@ if PRODUCTION:
             'NAME': 'holaGO',
             'USER': 'holaGO',
             'PASSWORD': 'DSpLFb4pWPEXFG7k',
-            'HOST': 'localhost',
+            'HOST': '127.0.0.1',
             'PORT': '3306',
         }
     }
