@@ -3,7 +3,7 @@ from category.models import *
 from django.contrib.auth.models import User
 
 class Product(models.Model):
-    category=models.ForeignKey(Category, related_name='products',on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     productName = models.CharField(max_length=322, verbose_name='Product Name')
     featureImage = models.ImageField(upload_to='features')
     productsGallery = models.ImageField(upload_to='gallery')
@@ -24,13 +24,12 @@ class Product(models.Model):
 
     # Shipping Section
     weight = models.DecimalField(max_digits=12, decimal_places=2)
-    dimension_length = models.DecimalField(max_digits=100, decimal_places=2, verbose_name='Length (cm)')
-    dimension_width = models.DecimalField(max_digits=100, decimal_places=2, verbose_name='Width (cm)')
-    dimension_height = models.DecimalField(max_digits=100, decimal_places=2, verbose_name='Height (cm)')
+    dimension_length = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Length (cm)')
+    dimension_width = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Width (cm)')
+    dimension_height = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Height (cm)')
 
     def __str__(self):
         return self.productName
-
 
 class Inventory(models.Model):
     product = models.ForeignKey(Product, related_name='inventory', on_delete=models.CASCADE)
