@@ -89,7 +89,7 @@ if PRODUCTION:
             'ENGINE': 'django.db.backends.mysql',
             'NAME': 'holaGO',
             'USER': 'holaGO',
-            'PASSWORD': 'z4id6SjEiCF6X4TH',
+            'PASSWORD': 'x4C3snBywwmAN35y',
             'HOST': '127.0.0.1',
             'PORT': '3306',
         }
