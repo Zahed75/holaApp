@@ -23,7 +23,7 @@ class Product(models.Model):
     fabric = models.CharField(max_length=200, verbose_name='Fabric')
 
     # Shipping Section
-    weight = models.DecimalField(max_digits=100, decimal_places=2, verbose_name='Weight (kg)')
+    weight = models.DecimalField(max_digits=12, decimal_places=2)
     dimension_length = models.DecimalField(max_digits=100, decimal_places=2, verbose_name='Length (cm)')
     dimension_width = models.DecimalField(max_digits=100, decimal_places=2, verbose_name='Width (cm)')
     dimension_height = models.DecimalField(max_digits=100, decimal_places=2, verbose_name='Height (cm)')
