@@ -14,11 +14,12 @@ SECRET_KEY = 'django-insecure-%isa=p4jpn7ep1dee2)l1xlzk5(r29!_8@^^@&1ev$!-q$z+8^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-PRODUCTION = True
+PRODUCTION = False
 ALLOWED_HOSTS = ['*', 'hola.syscomatic.com']
 
 # Application definition
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -27,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
     'auths',
     'category',
     'customer',
@@ -38,6 +40,7 @@ INSTALLED_APPS = [
     'reporting',
     'settings',
     'wishlist',
+
 ]
 
 MIDDLEWARE = [
@@ -112,7 +115,24 @@ REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser'
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'HolaGO MultiPlatform Ecommerce Solution by-Zahed Hasan',
+    'DESCRIPTION': 'Its a multitenant Application User can create'
+                   ' Multiple Outlets-Montyly Reporting Based on outlet-'
+                   'Application run On Python(Django Rest API),PostGreSQLDB,Caching Redis',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+}
+
+
+
+
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
