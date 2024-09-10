@@ -58,7 +58,7 @@ ROOT_URLCONF = 'holaApp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIR],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -173,38 +173,9 @@ MEDIA_ROOT = MEDIA_DIR
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CSRF and CORS settings
-CSRF_TRUSTED_ORIGINS = [
-    'https://hola.syscomatic.com',
-]
+CSRF_TRUSTED_ORIGINS = ['*']
 
-CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:3000',
-    'https://hola.syscomatic.com',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
 
-]
-
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
