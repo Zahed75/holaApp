@@ -181,11 +181,15 @@ CSRF_TRUSTED_ORIGINS = [
     "https://hola.syscomatic.com"
 ]
 
-
-
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "https://hola.syscomatic.com"
 ]
+
+# In case you're using HTTPS in production
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
 
 
 # Email settings
