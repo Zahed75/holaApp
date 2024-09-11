@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-%isa=p4jpn7ep1dee2)l1xlzk5(r29!_8@^^@&1ev$!-q$z+8^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-PRODUCTION = True
+PRODUCTION = False
 ALLOWED_HOSTS = ['*', 'hola.syscomatic.com']
 
 # Application definition
@@ -178,7 +178,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CSRF and CORS settings
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
+    "https://hola.syscomatic.com"
 ]
+
 
 
 CORS_ALLOWED_ORIGINS = [
