@@ -1,33 +1,33 @@
 from django.db import models
-from auths.models import *
-from django.contrib.auth.models import User
 from django.utils import timezone
-from auths.models import UserProfile
-
-# Create your models here.
-
-
-
+from auths.models import * # Assuming your user profile is here
+from products.models import  * # Assuming your product model is here
 
 class Order(models.Model):
     ORDER_STATUS_CHOICES = [
-        ('Pending Payment', 'Pending Payment'),
-        ('Processing', 'Processing'),
-        ('Completed', 'Completed'),
-        ('Cancelled', 'Cancelled'),
-        ('Failed', 'Failed'),
+        ('pending', 'Pending Payment'),
+        ('processing', 'Processing'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+        ('failed', 'Failed'),
     ]
 
-    orderId = models.CharField(max_length=255, unique=True)
-    customer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='orders')  # Link to UserProfile
-    customerName = models.CharField(max_length=255)
-    customerPhoneNumber = models.CharField(max_length=15)
-    orderTime = models.DateTimeField(auto_now_add=True)
+    orderId = models.CharField(max_length=100, unique=True)
+    customer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='orders')
+    products = models.ManyToManyField(Product, through='OrderItem', related_name='orders')
+    orderTime = models.DateTimeField(default=timezone.now)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    origin = models.CharField(max_length=255)
-    orderStatus = models.CharField(max_length=50, choices=ORDER_STATUS_CHOICES, default='Pending Payment')
-    status = models.BooleanField(default=True)
+    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
 
     def __str__(self):
-        return f"Order {self.orderId} - {self.customerPhoneNumber}"
+        return f'Order {self.orderId} - {self.customer.phone_number}'
 
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f'{self.product.productName} (x{self.quantity})'

@@ -1,11 +1,17 @@
 from django.contrib import admin
-from .models import Order
+from .models import *
 
 
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 1  # How many empty forms to display by default
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['orderId', 'customerName', 'customerPhoneNumber', 'orderTime', 'amount', 'orderStatus', 'status']
-    search_fields = ['orderId', 'customerName', 'customerPhoneNumber']  # Search by customer name and phone number
-    list_filter = ['orderStatus', 'status']
+    list_display = ('orderId', 'customer', 'amount', 'status', 'orderTime')
+    inlines = [OrderItemInline]
+
+    def customer(self, obj):
+        return obj.customer.phone_number
 
 admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem)

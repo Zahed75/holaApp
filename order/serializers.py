@@ -1,26 +1,28 @@
 from rest_framework import serializers
 from .models import *
 from auths.models import *
+from .models import *
+from products.models import *
 
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ['product', 'quantity', 'price']
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    customer = serializers.StringRelatedField(read_only=True)
-    customerPhoneNumber = serializers.CharField(read_only=True)
-    customerName = serializers.CharField(read_only=True)
+    order_items = OrderItemSerializer(many=True, source='orderitem_set')
 
     class Meta:
         model = Order
-        fields = ['orderId', 'customer', 'customerName', 'customerPhoneNumber', 'orderTime', 'amount', 'origin',
-                  'orderStatus', 'status']
+        fields = ['orderId', 'customer', 'orderTime', 'amount', 'status', 'order_items']
 
     def create(self, validated_data):
-        request = self.context.get('request')
-        user_profile = UserProfile.objects.get(user=request.user)
+        order_items_data = validated_data.pop('orderitem_set')
+        order = Order.objects.create(**validated_data)
 
-        # Automatically fill in customer details
-        validated_data['customer'] = user_profile
-        validated_data['customerPhoneNumber'] = user_profile.phone_number
-        validated_data['customerName'] = user_profile.user.username  # Assuming username is the customer's name
+        for order_item_data in order_items_data:
+            OrderItem.objects.create(order=order, **order_item_data)
 
-        return super().create(validated_data)
+        return order

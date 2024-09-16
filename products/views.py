@@ -7,7 +7,7 @@ from .modules import *
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
 
-def createProduct(request):
+def create_product(request):
     try:
         payload = request.data
         payload['user']= request.user.id
@@ -38,7 +38,7 @@ def createProduct(request):
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def addInventory(request, id):
+def add_inventory(request, id):
     try:
         # Fetch the product using the provided ID
         product = Product.objects.get(id=id)
@@ -81,7 +81,7 @@ def addInventory(request, id):
 @api_view(['PUT'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
-def updateProduct(request,id):
+def update_product(request,id):
 
     try:
         productObj = Product.objects.get(id=id)
@@ -115,7 +115,7 @@ def updateProduct(request,id):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 
-def updateInventory(request,id):
+def update_inventory(request,id):
 
     try:
         inventory = Inventory.objects.get(id=id)
@@ -146,7 +146,7 @@ def updateInventory(request,id):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 
-def deleteProduct(request,id):
+def delete_product(request,id):
     try:
         prodcutObj = Product.objects.get(id=id)
         prodcutObj.delete()
@@ -173,7 +173,7 @@ def deleteProduct(request,id):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 
-def InventoryDelete(request,id):
+def inventory_delete(request,id):
     try:
         inventoryObjects = Inventory.objects.get(id=id)
         inventoryObjects.delete()
@@ -195,7 +195,7 @@ def InventoryDelete(request,id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def getProducts(request):
+def get_products(request):
     try:
         products = Product.objects.all()
         data_serializer = ProductSerializer(products,many=True)
@@ -217,7 +217,7 @@ def getProducts(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 
-def getProductsbyId(request,id):
+def get_products_by_id(request,id):
     try:
         products = Product.objects.get(id=id)
         data_serializer = ProductSerializer(products,many=False)

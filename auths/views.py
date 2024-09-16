@@ -2,7 +2,7 @@
 from .modules import *
 
 
-API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
+API_KEY = '3cbe6feb4dc1d795ce934790b238727b013f542a'
 
 @api_view(['POST'])
 def register_user(request):
