@@ -29,3 +29,6 @@ class UserProfile(models.Model):
         # Check if OTP matches and is within the 5-minute validity period
         return (self.otp == otp and 
                 self.otp_created_at >= timezone.now() - timedelta(minutes=5))
+
+    def __str__(self):
+        return self.phone_number
