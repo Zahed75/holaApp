@@ -1,17 +1,14 @@
 from django.contrib import admin
-from .models import *
-
+from .models import Order, OrderItem
 
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
-    extra = 1  # How many empty forms to display by default
+    extra = 1
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('orderId', 'customer', 'amount', 'status', 'orderTime')
+    list_display = ('id', 'user', 'status', 'total_price', 'grand_total', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username',)
     inlines = [OrderItemInline]
 
-    def customer(self, obj):
-        return obj.customer.phone_number
-
 admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderItem)

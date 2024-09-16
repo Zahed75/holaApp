@@ -1,33 +1,54 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils import timezone
-from auths.models import * # Assuming your user profile is here
-from products.models import  * # Assuming your product model is here
+from products.models import *
+from discount.models import *
+from decimal import Decimal
+
+
 
 class Order(models.Model):
-    ORDER_STATUS_CHOICES = [
-        ('pending', 'Pending Payment'),
-        ('processing', 'Processing'),
-        ('completed', 'Completed'),
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('shipped', 'Shipped'),
+        ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
-        ('failed', 'Failed'),
     ]
 
-    orderId = models.CharField(max_length=100, unique=True)
-    customer = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='orders')
-    products = models.ManyToManyField(Product, through='OrderItem', related_name='orders')
-    orderTime = models.DateTimeField(default=timezone.now)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    customerName=models.CharField(max_length=120, blank=True),
+    products = models.ManyToManyField(Product, through='OrderItem')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    discount = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    vat = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    grand_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def calculate_total(self):
+        # Calculate the total price based on products and discount
+        total = sum([item.product.regularPrice * item.quantity for item in self.order_items.all()])
+
+        if self.discount:
+            total -= self.discount.coupon_amount
+
+        self.total_price = total
+        self.vat = total * Decimal(0.05)  # 5% VAT
+        self.grand_total = self.total_price + self.shipping_cost + self.vat
+        self.save()
 
     def __str__(self):
-        return f'Order {self.orderId} - {self.customer.phone_number}'
+        return f'Order {self.id} - {self.user.username}'
 
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f'{self.product.productName} (x{self.quantity})'
+        return f'{self.product.productName} - {self.quantity} pcs'
