@@ -17,7 +17,6 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-    customerName=models.CharField(max_length=120, blank=True),
     products = models.ManyToManyField(Product, through='OrderItem')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     discount = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)
@@ -30,7 +29,7 @@ class Order(models.Model):
 
     def calculate_total(self):
         # Calculate the total price based on products and discount
-        total = sum([item.product.regularPrice * item.quantity for item in self.order_items.all()])
+        total = sum([item.price * item.quantity for item in self.order_items.all()])
 
         if self.discount:
             total -= self.discount.coupon_amount
@@ -42,7 +41,6 @@ class Order(models.Model):
 
     def __str__(self):
         return f'Order {self.id} - {self.user.username}'
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')
