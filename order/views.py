@@ -5,12 +5,9 @@ from.modules import *
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_order(request):
-    user = request.user  # Ensure the user is authenticated
-
-    # Extract order data from the request
+    user = request.user
     data = request.data
 
-    # Validate customer ID
     customer_id = data.get('customer_id')
     if not customer_id:
         return Response({
@@ -19,7 +16,6 @@ def create_order(request):
         }, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        # Ensure that the customer belongs to the logged-in user
         customer = Customer.objects.get(id=customer_id, user=user)
     except Customer.DoesNotExist:
         return Response({
@@ -27,7 +23,6 @@ def create_order(request):
             "message": "Invalid customer. Please provide a valid customer ID for the logged-in user."
         }, status=status.HTTP_400_BAD_REQUEST)
 
-    # Check if the customer has a valid shipping address
     shipping_address = customer.shipping_addresses.first()  # Assuming we use the first shipping address
     if not shipping_address:
         return Response({
@@ -35,21 +30,19 @@ def create_order(request):
             "message": "No shipping address found for this customer."
         }, status=status.HTTP_400_BAD_REQUEST)
 
-    # Validate order items
     order_items_data = data.get('order_items')
     if not order_items_data:
         return Response({
             "status": 400,
             "message": "Order items are required."
         }, status=status.HTTP_400_BAD_REQUEST)
-
-    # Prepare order data for serializer
     order_data = {
         "user": user.id,
         "status": data.get('status', 'pending'),
-        "shippingAddress": shipping_address.id,  # Use the shipping address ID from the customer
+        "shippingAddress": shipping_address.id,
         "shipping_cost": data.get('shipping_cost', 0),
-        "order_items": []  # Initialize as empty; we'll add items below
+        "order_items": [],
+
     }
 
     total_price = Decimal(0)
@@ -58,11 +51,7 @@ def create_order(request):
     for item in order_items_data:
         product_id = item.get('product')
         quantity = item.get('quantity')
-
-        # Fetch the product
         product = get_object_or_404(Product, id=product_id)
-
-        # Calculate the price for this item
         price_per_item = product.salePrice if product.salePrice else product.regularPrice
 
         if price_per_item is None:

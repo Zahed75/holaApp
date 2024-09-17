@@ -23,7 +23,11 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['user', 'status', 'shippingAddress', 'shipping_cost', 'order_items']
+        fields = ['user', 'status', 'shippingAddress',
+                  'shipping_cost', 'order_items',
+                  'total_price','vat','grand_total',
+                  'created_at', 'updated_at'
+                  ]
 
     def create(self, validated_data):
         # Extract order items from validated data
@@ -36,3 +40,4 @@ class OrderSerializer(serializers.ModelSerializer):
         # Recalculate totals
         order.calculate_totals()
         return order
+
