@@ -1,41 +1,110 @@
 from.modules import *
-# Create your views here.
+
 
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_order(request):
+    user = request.user  # Ensure the user is authenticated
+
+    # Extract order data from the request
+    data = request.data
+
+    # Validate customer ID
+    customer_id = data.get('customer_id')
+    if not customer_id:
+        return Response({
+            "status": 400,
+            "message": "Customer ID is required."
+        }, status=status.HTTP_400_BAD_REQUEST)
+
     try:
-        payload = request.data.copy()
-        order_items_data = payload.pop('order_items', [])
-        total_amount = sum(Product.objects.get(id=item['product']).regularPrice * item.get('quantity', 1)
-                           for item in order_items_data)
+        # Ensure that the customer belongs to the logged-in user
+        customer = Customer.objects.get(id=customer_id, user=user)
+    except Customer.DoesNotExist:
+        return Response({
+            "status": 400,
+            "message": "Invalid customer. Please provide a valid customer ID for the logged-in user."
+        }, status=status.HTTP_400_BAD_REQUEST)
 
-        payload['amount'] = total_amount
-        payload['customer'] = request.user.userprofile.id
+    # Check if the customer has a valid shipping address
+    shipping_address = customer.shipping_addresses.first()  # Assuming we use the first shipping address
+    if not shipping_address:
+        return Response({
+            "status": 400,
+            "message": "No shipping address found for this customer."
+        }, status=status.HTTP_400_BAD_REQUEST)
 
-        order_serializer = OrderSerializer(data=payload, context={'request': request})
+    # Validate order items
+    order_items_data = data.get('order_items')
+    if not order_items_data:
+        return Response({
+            "status": 400,
+            "message": "Order items are required."
+        }, status=status.HTTP_400_BAD_REQUEST)
 
-        if order_serializer.is_valid():
-            order = order_serializer.save()
+    # Prepare order data for serializer
+    order_data = {
+        "user": user.id,
+        "status": data.get('status', 'pending'),
+        "shippingAddress": shipping_address.id,  # Use the shipping address ID from the customer
+        "shipping_cost": data.get('shipping_cost', 0),
+        "order_items": []  # Initialize as empty; we'll add items below
+    }
 
-            # Save order items
-            for item in order_items_data:
-                item['order'] = order.id  # Link order to each item
-                item_serializer = OrderItemSerializer(data=item)
-                if item_serializer.is_valid():
-                    item_serializer.save()
-                else:
-                    return Response({'code': status.HTTP_400_BAD_REQUEST, 'message': "Invalid order item data",
-                                     'errors': item_serializer.errors})
+    total_price = Decimal(0)
+    order_items = []
 
-            return Response({'code': status.HTTP_201_CREATED, 'message': "Order created successfully",
-                             'data': order_serializer.data})
-        else:
-            return Response(
-                {'code': status.HTTP_400_BAD_REQUEST, 'message': "Invalid data", 'errors': order_serializer.errors})
+    for item in order_items_data:
+        product_id = item.get('product')
+        quantity = item.get('quantity')
 
-    except Product.DoesNotExist:
-        return Response({'code': status.HTTP_400_BAD_REQUEST, 'message': "Product not found"})
+        # Fetch the product
+        product = get_object_or_404(Product, id=product_id)
+
+        # Calculate the price for this item
+        price_per_item = product.salePrice if product.salePrice else product.regularPrice
+
+        if price_per_item is None:
+            return Response({
+                "status": 400,
+                "message": f"Product {product_id} does not have a valid price."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        total_price += price_per_item * quantity
+
+        # Add item data with price to order_items list
+        order_items.append({
+            'product': product_id,
+            'quantity': quantity,
+            'price': price_per_item  # Include price here
+        })
+
+    # Update order data with order items
+    order_data['order_items'] = order_items
+
+    # Create the order and calculate the total cost
+    try:
+        # Serialize the data
+        serializer = OrderSerializer(data=order_data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            order = serializer.save()
+
+            # Update the order with calculated totals
+            order.total_price = total_price
+            order.vat = total_price * Decimal(0.05)  # Assuming 5% VAT
+            order.grand_total = total_price + order.shipping_cost + order.vat
+            order.save()
+
+            return Response({
+                "status": 201,
+                "message": "Order placed successfully",
+                "order": OrderSerializer(order).data
+            }, status=status.HTTP_201_CREATED)
+
     except Exception as e:
-        return Response({'code': status.HTTP_500_INTERNAL_SERVER_ERROR, 'message': str(e)})
+        return Response({
+            "status": 400,
+            "message": "Failed to place order",
+            "error": str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)

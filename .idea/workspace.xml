@@ -309,22 +309,11 @@
       <workItem from="1726488581033" duration="1147000" />
       <workItem from="1726512752877" duration="4269000" />
       <workItem from="1726544608960" duration="6573000" />
-      <workItem from="1726552389311" duration="7571000" />
+      <workItem from="1726552389311" duration="14396000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/auths/models.py</url>
-          <line>7</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

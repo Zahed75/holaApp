@@ -7,7 +7,7 @@ class ShippingAddressInline(admin.StackedInline):
     extra = 1
 
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'dob', 'club_points')
+    list_display = ('id','name', 'email', 'dob', 'club_points')
     search_fields = ('name', 'email')
     inlines = [ShippingAddressInline]
 
