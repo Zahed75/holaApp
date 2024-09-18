@@ -106,7 +106,7 @@ def deleteCategory(request, id):
 def get_allCategory(request):
     try:
         listCategory = Category.objects.all()
-        data_serializer =CategorySerializer(listCategory,many=True)
+        data_serializer =CategorySerializer(listCategory,many=True,context={'request': request})
         return Response({
             'code':status.HTTP_200_OK,
             'message': "Get All Categories Fetched",
@@ -180,3 +180,31 @@ def getCategoryById(request,id):
              'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         },status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def delete_categories(request):
+    category_ids = request.data.get('category_ids', [])
+
+    if not category_ids:
+        return Response({
+            "status": 400,
+            "message": "No category IDs provided"
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    # Find categories by IDs
+    categories = Category.objects.filter(id__in=category_ids)
+
+    if not categories.exists():
+        return Response({
+            "status": 404,
+            "message": "No categories found with the provided IDs"
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    # Delete categories
+    categories.delete()
+
+    return Response({
+        "status": 200,
+        "message": f"Categories with IDs {category_ids} deleted successfully"
+    }, status=status.HTTP_200_OK)

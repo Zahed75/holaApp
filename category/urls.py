@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/delete-category/<id>',deleteCategory),
     path('api/get-CategoryList',get_allCategory),
     path('api/getCategoryByName/<str:categoryName>',getCategoryById),
-    path('api/getCategoryById/<id>',getCategoryById)
+    path('api/getCategoryById/<id>',getCategoryById),
+    path('api/delete_categories/',delete_categories)
 
 ]

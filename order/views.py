@@ -62,26 +62,24 @@ def create_order(request):
 
         total_price += price_per_item * quantity
 
-        # Add item data with price to order_items list
+
         order_items.append({
             'product': product_id,
             'quantity': quantity,
-            'price': price_per_item  # Include price here
+            'price': price_per_item
         })
 
-    # Update order data with order items
     order_data['order_items'] = order_items
 
-    # Create the order and calculate the total cost
     try:
-        # Serialize the data
+
         serializer = OrderSerializer(data=order_data, context={'request': request})
         if serializer.is_valid(raise_exception=True):
             order = serializer.save()
 
-            # Update the order with calculated totals
+
             order.total_price = total_price
-            order.vat = total_price * Decimal(0.05)  # Assuming 5% VAT
+            order.vat = total_price * Decimal(0.05)
             order.grand_total = total_price + order.shipping_cost + order.vat
             order.save()
 
