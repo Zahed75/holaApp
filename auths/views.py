@@ -1,6 +1,5 @@
-
 from .modules import *
-
+from auths.models import User
 
 API_KEY = '3cbe6feb4dc1d795ce934790b238727b013f542a'
 
@@ -261,4 +260,25 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 "message": "User with this phone number does not exist."
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def all_users(request):
+    try:
+        all_users = User.objects.all()
+        data_serializer = UserSerializer(all_users, many=True,context={'request': request})
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': "Get All Users Fetched",
+            'data': data_serializer.data
+        })
+
+    except Exception as e:
+        return Response({
+            "code": status.HTTP_400_BAD_REQUEST,
+            "message": "User with this phone number does not exist."
+        }, status=status.HTTP_400_BAD_REQUEST)
 

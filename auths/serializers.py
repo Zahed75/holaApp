@@ -3,12 +3,12 @@ from rest_framework import serializers
 from .models import UserProfile
 
 class UserSerializer(serializers.ModelSerializer):
-    role = serializers.ChoiceField(choices=UserProfile.ROLE_CHOICES)
-    phone_number = serializers.CharField()
+    phone_number = serializers.CharField(source='userprofile.phone_number', read_only=True)
+    role = serializers.CharField(source='userprofile.role', read_only=True)
 
     class Meta:
         model = User
-        fields = ['id', 'role', 'phone_number']
+        fields = ['id', 'role', 'phone_number','role','username']
 
     def create(self, validated_data):
         phone_number = validated_data['phone_number']

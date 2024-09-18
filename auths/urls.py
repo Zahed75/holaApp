@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/verify-otp/',verify_otp),
     path('api/resendOtp/',resend_otp),
     path('api/tokenPair/',CustomTokenObtainPairView.as_view()),
+    path('api/all-users/',all_users),
 
 
 ]
