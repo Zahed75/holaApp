@@ -3,10 +3,11 @@ from .modules import *
 
 
 
+
+
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
-
 def create_product(request):
     try:
         payload = request.data
@@ -30,9 +31,9 @@ def create_product(request):
     except Exception as e:
         return Response({
            'code': status.HTTP_400_BAD_REQUEST,
-            'message': str(e) 
+            'message': str(e)
         })
-    
+
 
 
 

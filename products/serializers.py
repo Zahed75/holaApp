@@ -1,25 +1,24 @@
 from rest_framework import serializers
-from .models import Product
+from .models import *
+from category.models import *
+from category.serializers import *
+
+
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    featureImageURL = serializers.SerializerMethodField()
-    productsGalleryURL = serializers.SerializerMethodField()
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), many=True)
 
     class Meta:
         model = Product
-        fields = ['id', 'productName', 'regularPrice', 'featureImageURL', 'productsGalleryURL']
+        fields = '__all__'
 
-    # Get full URL for featureImage
-    def get_featureImageURL(self, obj):
-        request = self.context.get('request')
-        if obj.featureImage:
-            return request.build_absolute_uri(obj.featureImage.url)
-        return None
 
-    # Get full URL for productsGallery
-    def get_productsGalleryURL(self, obj):
-        request = self.context.get('request')
-        if obj.productsGallery:
-            return request.build_absolute_uri(obj.productsGallery.url)
-        return None
+
+
+
+class InventorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Inventory
+        fields = '__all__'

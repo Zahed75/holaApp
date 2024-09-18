@@ -3,10 +3,10 @@ from category.models import *
 from django.contrib.auth.models import User
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    category = models.ManyToManyField(Category, related_name='products')
     productName = models.CharField(max_length=322, verbose_name='Product Name')
-    featureImage = models.ImageField(upload_to='features')
-    productsGallery = models.ImageField(upload_to='gallery')
+    featureImage = models.ImageField(upload_to='features', null=True, blank=True)
+    productsGallery = models.ImageField(upload_to='gallery', null=True, blank=True)
     productDescription = models.TextField(max_length=10000, verbose_name='Descriptions')
     seoTitle = models.CharField(max_length=400, verbose_name='SEO Title')
     seoDescription = models.TextField(max_length=700)
@@ -23,13 +23,14 @@ class Product(models.Model):
     fabric = models.CharField(max_length=200, verbose_name='Fabric')
 
     # Shipping Section
-    weight = models.DecimalField(max_digits=6, decimal_places=2)  # Adjusted precision
+    weight = models.DecimalField(max_digits=6, decimal_places=2, verbose_name='Weight (kg)')
     dimension_length = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Length (cm)')
     dimension_width = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Width (cm)')
     dimension_height = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Height (cm)')
 
     def __str__(self):
         return self.productName
+
 
 class Inventory(models.Model):
     product = models.ForeignKey(Product, related_name='inventory', on_delete=models.CASCADE)
