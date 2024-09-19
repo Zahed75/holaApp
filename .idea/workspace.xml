@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="95e6d269-76f8-41cb-8858-253ecc3967ae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/holaApp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/holaApp/settings.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -102,7 +103,8 @@
       <workItem from="1726544608960" duration="6573000" />
       <workItem from="1726552389311" duration="16622000" />
       <workItem from="1726647561824" duration="21877000" />
-      <workItem from="1726684065573" duration="1197000" />
+      <workItem from="1726684065573" duration="2486000" />
+      <workItem from="1726734703081" duration="1682000" />
     </task>
     <servers />
   </component>
