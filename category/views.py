@@ -106,7 +106,7 @@ def deleteCategory(request, id):
 def get_allCategory(request):
     try:
         listCategory = Category.objects.all()
-        data_serializer =CategorySerializer(listCategory,many=True,context={'request': request})
+        data_serializer = CategorySerializer(listCategory,many=True,context={'request': request})
         return Response({
             'code':status.HTTP_200_OK,
             'message': "Get All Categories Fetched",
