@@ -93,7 +93,6 @@ def verify_otp(request):
     try:
         profile = UserProfile.objects.get(phone_number=phone_number)
         if profile.is_otp_valid(otp):
-            # Mark OTP as verified
             profile.otp_verified = True
             profile.save()
 

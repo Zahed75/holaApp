@@ -1,19 +1,22 @@
 from django.contrib import admin
 from .models import Product, Inventory
 
-
+# Define the InventoryInline to use in ProductAdmin
 class InventoryInline(admin.TabularInline):
     model = Inventory
-    extra = 1
+    extra = 1  # Number of empty forms displayed to add new inventories
+    min_num = 1  # Minimum number of inventory entries required
+    max_num = 10  # Maximum number of inventory entries allowed
+    verbose_name = 'Inventory'
+    verbose_name_plural = 'Inventories'
 
 
+# Register Product and InventoryAdmin
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('productName', 'regularPrice', 'salePrice', 'saleStart', 'saleEnd')
+    list_display = ('id','productName', 'regularPrice', 'salePrice', 'saleStart', 'saleEnd')
     search_fields = ('productName', 'productDescription', 'seoTitle')
-
-
-
+    inlines = [InventoryInline]  # Add InventoryInline to ProductAdmin
 
 
 @admin.register(Inventory)

@@ -14,6 +14,7 @@ urlpatterns = [
     path('api/deleteProduct/<id>',delete_product),
     path('api/deleteInventoryByProductId/<id>',inventory_delete),
     path('api/get-allProducts',get_products),
-    path('api/get-products/<id>',get_products_by_id)
+    path('api/get-products/<id>',get_products_by_id),
+    path('api/inventory/<int:product_id>/', get_inventory_by_product)
  
 ]

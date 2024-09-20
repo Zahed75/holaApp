@@ -11,6 +11,7 @@ class Product(models.Model):
     seoTitle = models.CharField(max_length=400, verbose_name='SEO Title')
     seoDescription = models.TextField(max_length=700)
     productShortDescription = models.TextField(max_length=5000)
+    color = models.CharField(max_length=100, verbose_name='Color')
 
     # General Section
     regularPrice = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Regular Price')
@@ -27,6 +28,8 @@ class Product(models.Model):
     dimension_length = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Length (cm)')
     dimension_width = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Width (cm)')
     dimension_height = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Height (cm)')
+    created =models.DateTimeField(auto_now_add=True)
+    updated =models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.productName

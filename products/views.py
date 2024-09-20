@@ -233,4 +233,36 @@ def get_products_by_id(request,id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
-        
+
+
+
+@api_view(['GET'])
+def get_inventory_by_product(request, product_id):
+    try:
+        # Fetch the product using product_id
+        product = Product.objects.get(id=product_id)
+
+        # Get all inventory related to this product
+        inventory = Inventory.objects.filter(product=product)
+
+        # Serialize the inventory data
+        serializer = InventorySerializer(inventory, many=True)
+
+        # Return serialized data
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': "Inventory details fetched successfully.",
+            'data': serializer.data
+        })
+
+    except Product.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': "Product not found."
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
