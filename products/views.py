@@ -10,7 +10,6 @@ from .modules import *
 @permission_classes([IsAuthenticated])
 def add_product(request):
     try:
-
         category_ids = request.data.get('category', '')
 
         # Split the string and convert it into a list of integers
@@ -19,6 +18,7 @@ def add_product(request):
         # Fetch categories based on the list of IDs
         categories = Category.objects.filter(id__in=category_ids_list)
 
+        # Create the product instance
         product = Product.objects.create(
             productName=request.data.get('productName'),
             productDescription=request.data.get('productDescription'),
@@ -37,12 +37,18 @@ def add_product(request):
             dimension_height=request.data.get('dimension_height'),
         )
 
-
+        # Set categories for the product
         product.category.set(categories)
         product.save()
 
+        # Handle image uploads (both featureImage and productsGallery)
+        images = request.FILES.getlist('images')
+        for image in images:
+            image_type = request.data.get('image_type', 'gallery')  # Use 'gallery' as default
+            ProductImage.objects.create(product=product, image=image, image_type=image_type)
 
-        product_data = ProductSerializer(product).data
+        # Serialize the product with images
+        product_data = ProductSerializer(product,context={'request': request}).data
 
         return JsonResponse({
             'message': 'Product added successfully!',
@@ -51,9 +57,6 @@ def add_product(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-
 
 
 

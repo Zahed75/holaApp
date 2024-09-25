@@ -1,14 +1,11 @@
-from django.db import models
 from category.models import *
 from django.contrib.auth.models import User
-
+from django.db import models
 
 
 class Product(models.Model):
     category = models.ManyToManyField(Category, related_name='products')
     productName = models.CharField(max_length=322, verbose_name='Product Name')
-    featureImage = models.ImageField(upload_to='features', null=True, blank=True)
-    productsGallery = models.ImageField(upload_to='gallery', null=True, blank=True)
     productDescription = models.TextField(max_length=10000, verbose_name='Descriptions')
     seoTitle = models.CharField(max_length=400, verbose_name='SEO Title')
     seoDescription = models.TextField(max_length=700)
@@ -30,11 +27,21 @@ class Product(models.Model):
     dimension_length = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Length (cm)')
     dimension_width = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Width (cm)')
     dimension_height = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Height (cm)')
-    created =models.DateTimeField(auto_now_add=True)
-    updated =models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.productName
+
+# New model to store multiple images
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
+    image_type = models.CharField(max_length=20, choices=[('feature', 'Feature Image'), ('gallery', 'Gallery Image')], default='gallery')
+    image = models.ImageField(upload_to='products/')
+
+    def __str__(self):
+        return f"{self.product.productName} - {self.image_type}"
+
 
 
 class Inventory(models.Model):
