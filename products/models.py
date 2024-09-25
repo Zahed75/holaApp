@@ -27,16 +27,17 @@ class Product(models.Model):
     dimension_length = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Length (cm)')
     dimension_width = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Width (cm)')
     dimension_height = models.DecimalField(max_digits=12, decimal_places=2, verbose_name='Height (cm)')
+    featureImage = models.ImageField(upload_to='products/', null=True, blank=True, verbose_name='Feature Image')  # Single feature image
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.productName
 
-# New model to store multiple images
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
-    image_type = models.CharField(max_length=20, choices=[('feature', 'Feature Image'), ('gallery', 'Gallery Image')], default='gallery')
+    image_type = models.CharField(max_length=20, choices=[('gallery', 'Gallery Image')], default='gallery')
     image = models.ImageField(upload_to='products/')
 
     def __str__(self):

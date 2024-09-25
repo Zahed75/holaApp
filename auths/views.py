@@ -264,20 +264,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
 def all_users(request):
     try:
         all_users = User.objects.all()
-        data_serializer = UserSerializer(all_users, many=True,context={'request': request})
+        data_serializer = UserSerializer(all_users, many=True, context={'request': request})
         return Response({
             'code': status.HTTP_200_OK,
             'message': "Get All Users Fetched",
             'data': data_serializer.data
         })
-
     except Exception as e:
         return Response({
             "code": status.HTTP_400_BAD_REQUEST,
-            "message": "User with this phone number does not exist."
+            "message": str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
-

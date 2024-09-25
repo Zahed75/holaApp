@@ -4,8 +4,6 @@ from .modules import *
 
 
 
-
-
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
@@ -35,17 +33,18 @@ def add_product(request):
             dimension_length=request.data.get('dimension_length'),
             dimension_width=request.data.get('dimension_width'),
             dimension_height=request.data.get('dimension_height'),
-            sizeCharts=request.FILES.get('sizeCharts')  # Handle sizeCharts image upload
+            sizeCharts=request.FILES.get('sizeCharts'),  # Handle sizeCharts image upload
+            featureImage=request.FILES.get('featureImage')  # Handle feature image upload
         )
 
         # Set categories for the product
         product.category.set(categories)
         product.save()
 
-        # Handle image uploads for ProductImage
+        # Handle gallery image uploads for ProductImage
         images = request.FILES.getlist('images')
         for image in images:
-            image_type = request.data.get('image_type', 'gallery')  # Default image type is 'gallery'
+            image_type = 'gallery'  # Default image type for gallery images
             ProductImage.objects.create(product=product, image=image, image_type=image_type)
 
         # Serialize the product with images
@@ -58,7 +57,6 @@ def add_product(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
 
 
 

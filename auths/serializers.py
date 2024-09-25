@@ -2,28 +2,37 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import UserProfile
 
+
+
+
+
 class UserSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(source='userprofile.phone_number', read_only=True)
-    role = serializers.CharField(source='userprofile.role', read_only=True)
+    # These fields are directly on the User model, so no need for `source`
+    first_name = serializers.CharField(read_only=True)
+    last_name = serializers.CharField(read_only=True)
+    email = serializers.EmailField(read_only=True)
+
+    # These fields are from the related UserProfile model
+    phone_number = serializers.SerializerMethodField()
+    role = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'role', 'phone_number','role','username']
+        fields = ['id', 'first_name', 'last_name', 'email', 'phone_number', 'role', 'username']
 
-    def create(self, validated_data):
-        phone_number = validated_data['phone_number']
-        role = validated_data['role']
-        
-        # Use phone number as username
-        username = phone_number
+    # Methods to fetch phone_number and role from UserProfile
+    def get_phone_number(self, obj):
+        try:
+            return obj.userprofile.phone_number
+        except UserProfile.DoesNotExist:
+            return None  # Return None or 'Not Available' if no profile exists
 
-        # Create User
-        user = User.objects.create(username=username)
+    def get_role(self, obj):
+        try:
+            return obj.userprofile.role
+        except UserProfile.DoesNotExist:
+            return None  # Return None or 'No Role' if no profile exists
 
-        # Create UserProfile with the associated User
-        UserProfile.objects.create(user=user, role=role, phone_number=phone_number)
-
-        return user
 
 
 
