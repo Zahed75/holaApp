@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Inventory
+from .models import *
 
 # Define the InventoryInline to use in ProductAdmin
 class InventoryInline(admin.TabularInline):
@@ -25,3 +25,8 @@ class InventoryAdmin(admin.ModelAdmin):
     search_fields = ('product__productName', 'size', 'barCode')
     ordering = ('product', 'size')
     list_filter = ('available',)
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ('product', 'image')

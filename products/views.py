@@ -5,15 +5,15 @@ from .modules import *
 
 
 
+
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
 def add_product(request):
     try:
+        # Handle category IDs
         category_ids = request.data.get('category', '')
-
-        # Split the string and convert it into a list of integers
-        category_ids_list = [int(id.strip()) for id in category_ids.split(',')]
+        category_ids_list = [int(id.strip()) for id in category_ids.split(',')] if category_ids else []
 
         # Fetch categories based on the list of IDs
         categories = Category.objects.filter(id__in=category_ids_list)
@@ -35,20 +35,21 @@ def add_product(request):
             dimension_length=request.data.get('dimension_length'),
             dimension_width=request.data.get('dimension_width'),
             dimension_height=request.data.get('dimension_height'),
+            sizeCharts=request.FILES.get('sizeCharts')  # Handle sizeCharts image upload
         )
 
         # Set categories for the product
         product.category.set(categories)
         product.save()
 
-        # Handle image uploads (both featureImage and productsGallery)
+        # Handle image uploads for ProductImage
         images = request.FILES.getlist('images')
         for image in images:
-            image_type = request.data.get('image_type', 'gallery')  # Use 'gallery' as default
+            image_type = request.data.get('image_type', 'gallery')  # Default image type is 'gallery'
             ProductImage.objects.create(product=product, image=image, image_type=image_type)
 
         # Serialize the product with images
-        product_data = ProductSerializer(product,context={'request': request}).data
+        product_data = ProductSerializer(product, context={'request': request}).data
 
         return JsonResponse({
             'message': 'Product added successfully!',
