@@ -2,6 +2,8 @@ from django.db import models
 from category.models import *
 from django.contrib.auth.models import User
 
+
+
 class Product(models.Model):
     category = models.ManyToManyField(Category, related_name='products')
     productName = models.CharField(max_length=322, verbose_name='Product Name')

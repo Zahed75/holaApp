@@ -7,7 +7,7 @@ from products.views import *
 
 urlpatterns = [
 
-    path('api/addProduct',create_product),
+    path('api/create-product/',add_product),
     path('api/addInventoryByProductId/<id>',add_inventory),
     path('api/editProduct/<id>',update_product),
     path('api/editInventoryByProductId/<id>',update_inventory),

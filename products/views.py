@@ -8,31 +8,52 @@ from .modules import *
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
-def create_product(request):
+def add_product(request):
     try:
-        payload = request.data
-        payload['user']= request.user.id
 
-        data_serializer = ProductSerializer(data=payload, context={'request': request})
+        category_ids = request.data.get('category', '')
 
-        if data_serializer.is_valid():
-            data_serializer.save()
-            return Response({
-                'code': status.HTTP_200_OK,
-                'message': "Product added successfully",
-                'data': data_serializer.data,
-            })
-        else:
-            return Response({
-                'code': status.HTTP_400_BAD_REQUEST,
-                'message': "Invalid data",
-                'errors': data_serializer.errors,
-            })
+        # Split the string and convert it into a list of integers
+        category_ids_list = [int(id.strip()) for id in category_ids.split(',')]
+
+        # Fetch categories based on the list of IDs
+        categories = Category.objects.filter(id__in=category_ids_list)
+
+        product = Product.objects.create(
+            productName=request.data.get('productName'),
+            productDescription=request.data.get('productDescription'),
+            seoTitle=request.data.get('seoTitle'),
+            seoDescription=request.data.get('seoDescription'),
+            productShortDescription=request.data.get('productShortDescription'),
+            color=request.data.get('color'),
+            regularPrice=request.data.get('regularPrice'),
+            salePrice=request.data.get('salePrice'),
+            saleStart=request.data.get('saleStart'),
+            saleEnd=request.data.get('saleEnd'),
+            fabric=request.data.get('fabric'),
+            weight=request.data.get('weight'),
+            dimension_length=request.data.get('dimension_length'),
+            dimension_width=request.data.get('dimension_width'),
+            dimension_height=request.data.get('dimension_height'),
+        )
+
+
+        product.category.set(categories)
+        product.save()
+
+
+        product_data = ProductSerializer(product).data
+
+        return JsonResponse({
+            'message': 'Product added successfully!',
+            'product': product_data
+        }, status=201)
+
     except Exception as e:
-        return Response({
-           'code': status.HTTP_400_BAD_REQUEST,
-            'message': str(e)
-        })
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+
 
 
 
