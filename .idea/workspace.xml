@@ -5,11 +5,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95e6d269-76f8-41cb-8858-253ecc3967ae" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/media/products/358714794_2202332286631578_1219068887442216073_n_2H3spHm.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/358714794_2202332286631578_1219068887442216073_n_HFxXoHZ.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/358714794_2202332286631578_1219068887442216073_n_Qzatlbe.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/358714794_2202332286631578_1219068887442216073_n_oDxrYKc.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/358714794_2202332286631578_1219068887442216073_n_xy6FzSi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/364056407_1680590755700615_6880416220896766664_n_qopQ0MC.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/size_charts/8_4Q3yreo.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/size_charts/8_BdnwNxh.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/size_charts/8_Q1CEeFK.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/size_charts/8_Vt4t4vW.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/size_charts/8_XpJFpq1.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auths/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/auths/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/auths/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/auths/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/products/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/products/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlet/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/outlet/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlet/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/outlet/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/products/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -30,6 +42,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Zahed75"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Zahed75/holaApp.git",
+    "accountId": "5610eb6f-1d6f-4e4c-8bb9-99f57236b8c8"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>

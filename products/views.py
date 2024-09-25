@@ -105,22 +105,36 @@ def add_inventory(request, id):
 @api_view(['PUT'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
-def update_product(request,id):
-
+def update_product(request, id):
     try:
+        # Get the product object by its ID
         productObj = Product.objects.get(id=id)
-        
-        serializer = ProductSerializer(productObj,data=request.data,partial=True,context={'request':request})
+
+        # Extract categories from the request data if they exist and convert them to primary keys (IDs)
+        data = request.data.copy()
+
+        # If 'category' is present in the request, ensure it's a list of integers (primary keys)
+        if 'category' in data:
+            if isinstance(data['category'], str):
+                data.setlist('category', data['category'].split(','))  # Split string by commas
+            elif isinstance(data['category'], list):
+                data['category'] = [int(cat_id) for cat_id in data['category']]  # Convert to list of integers
+
+        # Pass modified data to the serializer
+        serializer = ProductSerializer(productObj, data=data, partial=True, context={'request': request})
+
         if not serializer.is_valid():
             return Response({
                 'status': 400,
-                'payload': serializer.errors, 
+                'payload': serializer.errors,
                 'message': 'Something Went Wrong'
             })
+
+        # Save the updated product
         serializer.save()
-        print(serializer)
+
         return Response({
-            'status': 200, 
+            'status': 200,
             'payload': serializer.data,
             'message': "Product updated successfully"
         })
@@ -130,10 +144,6 @@ def update_product(request,id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
-    
-
-
-
 
 
 @api_view(['PUT'])

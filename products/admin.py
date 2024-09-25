@@ -21,7 +21,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Inventory)
 class InventoryAdmin(admin.ModelAdmin):
-    list_display = ('product', 'size', 'quantity', 'barCode', 'available')
+    list_display = ('id','product', 'size', 'quantity', 'barCode', 'available')
     search_fields = ('product__productName', 'size', 'barCode')
     ordering = ('product', 'size')
     list_filter = ('available',)

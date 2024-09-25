@@ -226,6 +226,7 @@ def tokenVerify(request):
 
 
 API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,) 
 
@@ -277,4 +278,4 @@ def all_users(request):
         return Response({
             "code": status.HTTP_400_BAD_REQUEST,
             "message": str(e)
-        }, status=status.HTTP_400_BAD_REQUEST)
+        })
