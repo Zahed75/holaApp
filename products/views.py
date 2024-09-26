@@ -225,24 +225,23 @@ def inventory_delete(request,id):
 
 
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_products(request):
     try:
         products = Product.objects.all()
-        data_serializer = ProductSerializer(products,many=True)
+        # Pass request context to the serializer to handle absolute URIs for image fields
+        data_serializer = ProductSerializer(products, many=True, context={'request': request})
         return Response({
             'code': status.HTTP_200_OK,
-            'message':'Get All Products Fetched Successfully',
-            'data':data_serializer.data
+            'message': 'Get All Products Fetched Successfully',
+            'data': data_serializer.data
         })
     except Exception as e:
-          return Response({
+        return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
-
 
 
 
