@@ -100,7 +100,6 @@ def add_inventory(request, id):
 
 
 
-
 @api_view(['PUT'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
@@ -119,7 +118,21 @@ def update_product(request, id):
             elif isinstance(data['category'], list):
                 data['category'] = [int(cat_id) for cat_id in data['category']]  # Convert to list of integers
 
-        # Pass modified data to the serializer
+        # Update image fields explicitly if they are provided
+        if 'featureImage' in request.FILES:
+            productObj.featureImage = request.FILES['featureImage']
+
+        if 'sizeCharts' in request.FILES:
+            productObj.sizeCharts = request.FILES['sizeCharts']
+
+        # Handle gallery images if provided
+        if 'images' in request.FILES.getlist('images'):
+            # Remove existing images (optional) and add new ones
+            ProductImage.objects.filter(product=productObj).delete()
+            for image in request.FILES.getlist('images'):
+                ProductImage.objects.create(product=productObj, image=image)
+
+        # Pass modified data to the serializer (partial=True allows partial updates)
         serializer = ProductSerializer(productObj, data=data, partial=True, context={'request': request})
 
         if not serializer.is_valid():
