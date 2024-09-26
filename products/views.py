@@ -126,7 +126,7 @@ def update_product(request, id):
             return Response({
                 'status': 400,
                 'payload': serializer.errors,
-                'message': 'Something Went Wrong'
+                'message': 'Something went wrong while validating the data'
             })
 
         # Save the updated product
@@ -143,6 +143,10 @@ def update_product(request, id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+
+
 
 
 @api_view(['PUT'])

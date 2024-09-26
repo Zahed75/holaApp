@@ -4,9 +4,6 @@ from .models import Product, ProductImage, Category, Inventory
 
 
 
-
-
-
 class ProductImageSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
 
@@ -30,12 +27,15 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_sizeCharts(self, obj):
+        # Ensure the URL for sizeCharts is properly generated
         request = self.context.get('request')
         return request.build_absolute_uri(obj.sizeCharts.url) if obj.sizeCharts else None
 
     def get_featureImage(self, obj):
+        # Ensure the URL for featureImage is properly generated
         request = self.context.get('request')
         return request.build_absolute_uri(obj.featureImage.url) if obj.featureImage else None
+
 
 
 
