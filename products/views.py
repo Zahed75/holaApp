@@ -4,6 +4,7 @@ from .modules import *
 
 
 
+
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
@@ -39,13 +40,11 @@ def add_product(request):
 
         # Set categories for the product
         product.category.set(categories)
-        product.save()
 
         # Handle gallery image uploads for ProductImage
         images = request.FILES.getlist('images')
         for image in images:
-            image_type = 'gallery'  # Default image type for gallery images
-            ProductImage.objects.create(product=product, image=image, image_type=image_type)
+            ProductImage.objects.create(product=product, image=image, image_type='gallery')
 
         # Serialize the product with images
         product_data = ProductSerializer(product, context={'request': request}).data

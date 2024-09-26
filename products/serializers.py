@@ -8,75 +8,34 @@ from .models import Product, ProductImage, Category, Inventory
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = ProductImage
         fields = ['id', 'image_type', 'image']
 
+    def get_image(self, obj):
+        # Generate absolute URL for the image
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.image.url) if obj.image else None
+
 class ProductSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), many=True)
     images = ProductImageSerializer(many=True, required=False)
-    sizeCharts = serializers.ImageField(required=False)
-    featureImage = serializers.ImageField(required=False)  # Single feature image field
+    sizeCharts = serializers.SerializerMethodField()
+    featureImage = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = '__all__'
 
-    def create(self, validated_data):
-        categories = validated_data.pop('category', [])
-        images_data = validated_data.pop('images', [])
-        feature_image_data = validated_data.pop('featureImage', None)
-        size_chart_data = validated_data.pop('sizeCharts', None)
+    def get_sizeCharts(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.sizeCharts.url) if obj.sizeCharts else None
 
-        product = Product.objects.create(**validated_data)
-
-        product.category.set(categories)
-
-        # Handle feature image
-        if feature_image_data:
-            product.featureImage = feature_image_data
-            product.save()
-
-        # Handle gallery images
-        for image_data in images_data:
-            ProductImage.objects.create(product=product, **image_data)
-
-        # Handle size chart if provided
-        if size_chart_data:
-            product.sizeCharts = size_chart_data
-            product.save()
-
-        return product
-
-    def update(self, instance, validated_data):
-        categories = validated_data.pop('category', None)
-        images_data = validated_data.pop('images', None)
-        feature_image_data = validated_data.pop('featureImage', None)
-        size_chart_data = validated_data.pop('sizeCharts', None)
-
-        if categories is not None:
-            instance.category.set(categories)
-
-        # Handle feature image update
-        if feature_image_data is not None:
-            instance.featureImage = feature_image_data
-
-        # Update gallery images if provided
-        if images_data is not None:
-            instance.images.all().delete()  # Remove old images
-            for image_data in images_data:
-                ProductImage.objects.create(product=instance, **image_data)
-
-        # Update size chart if provided
-        if size_chart_data is not None:
-            instance.sizeCharts = size_chart_data
-
-        # Update the instance with the remaining validated data
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        instance.save()
-        return instance
+    def get_featureImage(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.featureImage.url) if obj.featureImage else None
 
 
 

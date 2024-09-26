@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-%isa=p4jpn7ep1dee2)l1xlzk5(r29!_8@^^@&1ev$!-q$z+8^
 DEBUG = True
 
 PRODUCTION = True
-ALLOWED_HOSTS = ['*', 'hola.syscomatic.com']
+ALLOWED_HOSTS = ['hola.syscomatic.com', '127.0.0.1', 'localhost']
 
 # Application definition
 INSTALLED_APPS = [
