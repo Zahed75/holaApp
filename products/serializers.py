@@ -40,6 +40,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 
+
+
+
+
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory

@@ -108,31 +108,33 @@ def update_product(request, id):
         # Get the product object by its ID
         productObj = Product.objects.get(id=id)
 
-        # Extract categories from the request data if they exist and convert them to primary keys (IDs)
+        # Copy request data
         data = request.data.copy()
 
-        # If 'category' is present in the request, ensure it's a list of integers (primary keys)
+        # Handle category updates
         if 'category' in data:
             if isinstance(data['category'], str):
                 data.setlist('category', data['category'].split(','))  # Split string by commas
             elif isinstance(data['category'], list):
                 data['category'] = [int(cat_id) for cat_id in data['category']]  # Convert to list of integers
 
-        # Update image fields explicitly if they are provided
+        # Handle image fields explicitly
         if 'featureImage' in request.FILES:
             productObj.featureImage = request.FILES['featureImage']
 
         if 'sizeCharts' in request.FILES:
             productObj.sizeCharts = request.FILES['sizeCharts']
 
-        # Handle gallery images if provided
+        # Handle product gallery images
         if 'images' in request.FILES.getlist('images'):
-            # Remove existing images (optional) and add new ones
+            # Clear existing images (optional)
             ProductImage.objects.filter(product=productObj).delete()
+
+            # Add new images
             for image in request.FILES.getlist('images'):
                 ProductImage.objects.create(product=productObj, image=image)
 
-        # Pass modified data to the serializer (partial=True allows partial updates)
+        # Use the serializer for partial updates
         serializer = ProductSerializer(productObj, data=data, partial=True, context={'request': request})
 
         if not serializer.is_valid():
@@ -262,25 +264,36 @@ def get_products(request):
 
 
 
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-
-def get_products_by_id(request,id):
+def get_products_by_id(request, id):
     try:
-        products = Product.objects.get(id=id)
-        data_serializer = ProductSerializer(products,many=False)
+        # Fetch product by ID
+        product = Product.objects.get(id=id)
+
+        # Pass the request context to the serializer
+        data_serializer = ProductSerializer(product, many=False, context={'request': request})
+
         return Response({
             'code': status.HTTP_200_OK,
             'message': 'Data retrieved successfully',
             'data': data_serializer.data
         })
-    
+
+    except Product.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Product not found'
+        })
+
     except Exception as e:
-         return Response({
+        return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+
 
 
 
