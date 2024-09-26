@@ -1,97 +1,99 @@
-from.modules import *
-
+from .modules import *
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def create_order(request):
-    user = request.user
-    data = request.data
-
-    customer_id = data.get('customer_id')
-    if not customer_id:
-        return Response({
-            "status": 400,
-            "message": "Customer ID is required."
-        }, status=status.HTTP_400_BAD_REQUEST)
-
     try:
-        customer = Customer.objects.get(id=customer_id, user=user)
-    except Customer.DoesNotExist:
-        return Response({
-            "status": 400,
-            "message": "Invalid customer. Please provide a valid customer ID for the logged-in user."
-        }, status=status.HTTP_400_BAD_REQUEST)
+        user = request.user  # Assuming you get the user from the request
+        shipping_address_id = request.data.get('shipping_address_id')
+        coupon_code = request.data.get('coupon_code', None)
+        items = request.data.get('items', [])
 
-    shipping_address = customer.shipping_addresses.first()  # Assuming we use the first shipping address
-    if not shipping_address:
-        return Response({
-            "status": 400,
-            "message": "No shipping address found for this customer."
-        }, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            # Validate shipping address
+            shipping_address = ShippingAddress.objects.get(id=shipping_address_id, customer__user=user)
 
-    order_items_data = data.get('order_items')
-    if not order_items_data:
-        return Response({
-            "status": 400,
-            "message": "Order items are required."
-        }, status=status.HTTP_400_BAD_REQUEST)
-    order_data = {
-        "user": user.id,
-        "status": data.get('status', 'pending'),
-        "shippingAddress": shipping_address.id,
-        "shipping_cost": data.get('shipping_cost', 0),
-        "order_items": [],
+            # Validate coupon code if provided
+            coupon = None
+            if coupon_code:
+                coupon = Discount.objects.get(code=coupon_code)
 
-    }
+            # Create the order
+            order = Order.objects.create(
+                user=user,
+                shipping_address=shipping_address,  # Correct field name
+                coupon_code=coupon  # Ensure coupon_code matches the Order model field
+            )
 
-    total_price = Decimal(0)
-    order_items = []
+            # Create order items
+            for item in items:
+                product = Product.objects.get(id=item['product_id'])
+                # Use the salePrice if available, otherwise use regularPrice
+                price_to_use = product.salePrice if product.salePrice else product.regularPrice
 
-    for item in order_items_data:
-        product_id = item.get('product')
-        quantity = item.get('quantity')
-        product = get_object_or_404(Product, id=product_id)
-        price_per_item = product.salePrice if product.salePrice else product.regularPrice
+                OrderItem.objects.create(
+                    order=order,
+                    product=product,
+                    quantity=item['quantity'],
+                    price=price_to_use  # Use the chosen price
+                )
 
-        if price_per_item is None:
-            return Response({
-                "status": 400,
-                "message": f"Product {product_id} does not have a valid price."
-            }, status=status.HTTP_400_BAD_REQUEST)
+            # Calculate totals
+            order.calculate_totals()
 
-        total_price += price_per_item * quantity
-
-
-        order_items.append({
-            'product': product_id,
-            'quantity': quantity,
-            'price': price_per_item
-        })
-
-    order_data['order_items'] = order_items
-
-    try:
-
-        serializer = OrderSerializer(data=order_data, context={'request': request})
-        if serializer.is_valid(raise_exception=True):
-            order = serializer.save()
-
-
-            order.total_price = total_price
-            order.vat = total_price * Decimal(0.05)
-            order.grand_total = total_price + order.shipping_cost + order.vat
-            order.save()
+            # Prepare response data
+            order_details = {
+                "order_id": order.id,
+                "user": order.user.username,
+                "shipping_address": {
+                    "name": shipping_address.name,
+                    "phone_number": shipping_address.phone_number,
+                    "address": shipping_address.address,
+                    "area": shipping_address.area,
+                    "street": shipping_address.street,
+                    "city": shipping_address.city,
+                    "state": shipping_address.state,
+                    "zip_code": shipping_address.zip_code,
+                },
+                "items": [
+                    {
+                        "product_id": item.product.id,
+                        "product_name": item.product.productName,
+                        "quantity": item.quantity,
+                        "price": item.price,
+                    } for item in order.order_items.all()
+                ],
+                "shipping_cost": str(order.shipping_cost),
+                "total_price": str(order.total_price),
+                "vat": str(order.vat),
+                "grand_total": str(order.grand_total),
+                "status": order.status,
+                "created_at": order.created_at,
+            }
 
             return Response({
-                "status": 201,
-                "message": "Order placed successfully",
-                "order": OrderSerializer(order).data
+                "message": "Order created successfully",
+                "order_details": order_details
             }, status=status.HTTP_201_CREATED)
 
+        except ShippingAddress.DoesNotExist:
+            return Response({
+                "code": 400,
+                "message": "No shipping address found for this customer"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+        except Discount.DoesNotExist:
+            return Response({
+                "code": 400,
+                "message": "Invalid coupon code"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
     except Exception as e:
+
         return Response({
-            "status": 400,
-            "message": "Failed to place order",
-            "error": str(e)
-        }, status=status.HTTP_400_BAD_REQUEST)
+            "code": 500, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+

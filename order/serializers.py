@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import *
 from products.models import  *
 from customer.models import *
+from decimal import Decimal
+
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -9,35 +11,35 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ['product', 'quantity', 'price']
 
-    def validate(self, data):
-        # Ensure the product exists and has a price
-        if not Product.objects.filter(id=data['product'].id).exists():
-            raise serializers.ValidationError("Product does not exist.")
-        if data['price'] is None:
-            raise serializers.ValidationError("Price cannot be null.")
-        return data
 
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True)
-    shippingAddress = serializers.PrimaryKeyRelatedField(queryset=ShippingAddress.objects.all())
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Order
-        fields = ['user', 'status', 'shippingAddress',
-                  'shipping_cost', 'order_items',
-                  'total_price','vat','grand_total',
-                  'created_at', 'updated_at'
-                  ]
+        fields = ['id', 'user', 'status', 'shipping_cost', 'total_price', 'vat', 'grand_total', 'order_items',
+                  'created_at', 'updated_at']
 
     def create(self, validated_data):
-        # Extract order items from validated data
         order_items_data = validated_data.pop('order_items')
-        # Create the Order instance
-        order = Order.objects.create(**validated_data)
-        # Create OrderItem instances
-        for item_data in order_items_data:
-            OrderItem.objects.create(order=order, **item_data)
-        # Recalculate totals
-        order.calculate_totals()
-        return order
+        user = self.context['request'].user
+        order = Order.objects.create(user=user, **validated_data)
 
+        # Process order items
+        total_price = 0
+        for item_data in order_items_data:
+            product = item_data['product']
+            quantity = item_data['quantity']
+            # Choose price based on business logic (offer price vs regular price)
+            price = product.regularPrice if validated_data.get('use_coupon') else product.salePrice
+            OrderItem.objects.create(order=order, product=product, quantity=quantity, price=price)
+            total_price += price * quantity
+
+        # Calculate totals
+        order.total_price = total_price
+        order.vat = total_price * Decimal(0.05)  # Assuming VAT is 5%
+        order.grand_total = total_price + order.shipping_cost + order.vat
+
+        order.save()
+        return order

@@ -6,9 +6,8 @@ class OrderItemInline(admin.TabularInline):
     extra = 1
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'status', 'total_price', 'grand_total', 'created_at')
-    list_filter = ('status', 'created_at')
-    search_fields = ('user__username',)
+    list_display = ['id', 'user', 'status', 'shipping_cost', 'total_price', 'vat', 'grand_total', 'created_at', 'updated_at']
     inlines = [OrderItemInline]
 
 admin.site.register(Order, OrderAdmin)
+admin.site.register(OrderItem)
