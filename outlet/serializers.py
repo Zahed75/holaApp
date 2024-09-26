@@ -18,16 +18,20 @@ class OutletSerializer(serializers.ModelSerializer):
         fields = ['id', 'manager', 'manager_details', 'outletName', 'location']
 
     def get_manager_details(self, obj):
-        # Return the manager's details in the response
-        manager_profile = UserProfile.objects.get(user=obj.manager)
-        return {
-            'id': manager_profile.unique_user_id,
-            'first_name': obj.manager.first_name,
-            'last_name': obj.manager.last_name,
-            'email': obj.manager.email,
-            'phone_number': manager_profile.phone_number,
-            'role': manager_profile.role
-        }
+        try:
+            # Fetch the manager's profile, if it exists
+            manager_profile = UserProfile.objects.get(user=obj.manager)
+            return {
+                'id': manager_profile.unique_user_id,
+                'first_name': obj.manager.first_name,
+                'last_name': obj.manager.last_name,
+                'email': obj.manager.email,
+                'phone_number': manager_profile.phone_number,
+                'role': manager_profile.role
+            }
+        except UserProfile.DoesNotExist:
+            # Handle missing profile
+            return None
 
     def create(self, validated_data):
         # Extract the manager's unique_user_id from the data
