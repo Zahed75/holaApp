@@ -12,7 +12,7 @@ def add_Category(request):
         payload['user'] = request.user.id  # Set the user from the request
 
         # Serialize the data with image handling
-        data_serializer = CategorySerializer(data=payload, context={'request': request})
+        data_serializer = CategorySerializer(data=payload)
 
         # Validate and save the data
         if data_serializer.is_valid():
