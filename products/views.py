@@ -47,7 +47,7 @@ def add_product(request):
             ProductImage.objects.create(product=product, image=image, image_type='gallery')
 
         # Serialize the product with images
-        product_data = ProductSerializer(product, context={'request': request}).data
+        product_data = ProductSerializer(product).data
 
         return JsonResponse({
             'message': 'Product added successfully!',
@@ -250,7 +250,7 @@ def get_products(request):
     try:
         products = Product.objects.all()
         # Pass request context to the serializer to handle absolute URIs for image fields
-        data_serializer = ProductSerializer(products, many=True, context={'request': request})
+        data_serializer = ProductSerializer(products, many=True,)
         return Response({
             'code': status.HTTP_200_OK,
             'message': 'Get All Products Fetched Successfully',

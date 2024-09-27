@@ -7,7 +7,7 @@
     <list default="true" id="95e6d269-76f8-41cb-8858-253ecc3967ae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/holaApp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/holaApp/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/products/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +120,7 @@
       <workItem from="1726734703081" duration="1682000" />
       <workItem from="1726757221122" duration="9160000" />
       <workItem from="1727338309844" duration="19596000" />
-      <workItem from="1727426535734" duration="3981000" />
+      <workItem from="1727426535734" duration="4679000" />
     </task>
     <servers />
   </component>
