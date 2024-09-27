@@ -20,9 +20,18 @@ ALLOWED_HOSTS = ['*','hola.syscomatic.com']
 
 
 
+import os
+
+# For localhost
 if DEBUG:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     SITE_URL = 'http://127.0.0.1:8000'
+
+# For production
 else:
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
     SITE_URL = 'https://hola.syscomatic.com'
 
 
