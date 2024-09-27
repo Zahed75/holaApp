@@ -3,19 +3,17 @@ from .modules import *
 # Create your views here.
 
 
-
-
-
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
 def add_Category(request):
     try:
         payload = request.data
-        payload['user'] = request.user.id
-        # Serialize the data
+        payload['user'] = request.user.id  # Set the user from the request
+
+        # Serialize the data with image handling
         data_serializer = CategorySerializer(data=payload, context={'request': request})
-        
+
         # Validate and save the data
         if data_serializer.is_valid():
             data_serializer.save()
@@ -36,10 +34,6 @@ def add_Category(request):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
-    
-
-
-
 
 
 @api_view(['PUT'])
