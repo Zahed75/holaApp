@@ -4,7 +4,6 @@ from .modules import *
 
 
 
-
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
@@ -47,7 +46,7 @@ def add_product(request):
             ProductImage.objects.create(product=product, image=image, image_type='gallery')
 
         # Serialize the product with images
-        product_data = ProductSerializer(product).data
+        product_data = ProductSerializer(product, context={'request': request}).data
 
         return JsonResponse({
             'message': 'Product added successfully!',
@@ -56,6 +55,10 @@ def add_product(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+
+
 
 
 
@@ -245,12 +248,11 @@ def inventory_delete(request,id):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_products(request):
     try:
         products = Product.objects.all()
         # Pass request context to the serializer to handle absolute URIs for image fields
-        data_serializer = ProductSerializer(products, many=True,)
+        data_serializer = ProductSerializer(products, many=True, context={'request': request})
         return Response({
             'code': status.HTTP_200_OK,
             'message': 'Get All Products Fetched Successfully',
