@@ -12,7 +12,7 @@ def add_Category(request):
         payload['user'] = request.user.id  # Set the user from the request
 
         # Serialize the data with image handling
-        data_serializer = CategorySerializer(data=payload,context={'request': request})
+        data_serializer = CategorySerializer(data=payload)
 
         # Validate and save the data
         if data_serializer.is_valid():
@@ -46,7 +46,7 @@ def updateCategory(request, id):  # Add id as a parameter
     try:
         catObj = Category.objects.get(id=id)
 
-        serializer = CategorySerializer(catObj, data=request.data, partial=True, context={'request': request})  # Correct context passing
+        serializer = CategorySerializer(catObj, data=request.data, partial=True)  # Correct context passing
         if not serializer.is_valid():
             return Response({
                 'status': 400,
@@ -103,7 +103,7 @@ def deleteCategory(request, id):
 def get_allCategory(request):
     try:
         listCategory = Category.objects.all()
-        data_serializer = CategorySerializer(listCategory,many=True,context={'request': request})
+        data_serializer = CategorySerializer(listCategory,many=True)
         return Response({
             'code':status.HTTP_200_OK,
             'message': "Get All Categories Fetched",
@@ -130,7 +130,7 @@ def get_category_by_name(request, categoryName):
         print("Check:", category)
         
        
-        data_serializer = CategorySerializer(category, many=False,context={'request': request})
+        data_serializer = CategorySerializer(category, many=False)
         
         return Response({
             'code': status.HTTP_200_OK,
@@ -157,7 +157,7 @@ def get_category_by_name(request, categoryName):
 def get_category_by_id(request, id):
     try:
         category = Category.objects.get(id=id)
-        data_serializer = CategorySerializer(category, context={'request': request})  # Pass request context
+        data_serializer = CategorySerializer(category)  # Pass request context
         return Response({
             'code': status.HTTP_200_OK,
             'message': 'Data retrieved successfully',
