@@ -1,13 +1,15 @@
 from .modules import *
 
 
+
 @api_view(['POST'])
 def create_order(request):
     try:
-        user = request.user  # Assuming you get the user from the request
+        user = request.user  # Get the user from the request
         shipping_address_id = request.data.get('shipping_address_id')
         coupon_code = request.data.get('coupon_code', None)
         items = request.data.get('items', [])
+        shipping_cost = request.data.get('shipping_cost')  # Fetch shipping_cost from the request
 
         try:
             # Validate shipping address
@@ -21,8 +23,9 @@ def create_order(request):
             # Create the order
             order = Order.objects.create(
                 user=user,
-                shipping_address=shipping_address,  # Correct field name
-                coupon_code=coupon  # Ensure coupon_code matches the Order model field
+                shipping_address=shipping_address,
+                coupon_code=coupon,
+                shipping_cost=Decimal(shipping_cost)  # Set the shipping cost from the request
             )
 
             # Create order items
@@ -35,10 +38,10 @@ def create_order(request):
                     order=order,
                     product=product,
                     quantity=item['quantity'],
-                    price=price_to_use  # Use the chosen price
+                    price=price_to_use
                 )
 
-            # Calculate totals
+            # Calculate totals (including VAT and grand total)
             order.calculate_totals()
 
             # Prepare response data
@@ -91,9 +94,7 @@ def create_order(request):
 
 
     except Exception as e:
-
         return Response({
             "code": 500, "message": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
-

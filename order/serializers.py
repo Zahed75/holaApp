@@ -1,7 +1,5 @@
 from rest_framework import serializers
 from .models import *
-from products.models import  *
-from customer.models import *
 from decimal import Decimal
 
 
