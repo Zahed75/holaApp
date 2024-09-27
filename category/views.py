@@ -36,6 +36,9 @@ def add_Category(request):
         })
 
 
+
+
+
 @api_view(['PUT'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
@@ -120,14 +123,14 @@ def get_allCategory(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def getCategoryById(request, categoryName):
+def get_category_by_name(request, categoryName):
     try:
         
         category = Category.objects.get(categoryName=categoryName)
         print("Check:", category)
         
        
-        data_serializer = CategorySerializer(category, many=False)
+        data_serializer = CategorySerializer(category, many=False,context={'request': request})
         
         return Response({
             'code': status.HTTP_200_OK,
@@ -151,29 +154,27 @@ def getCategoryById(request, categoryName):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-
-def getCategoryById(request,id):
-
+def get_category_by_id(request, id):
     try:
-        categorys = Category.objects.get(id=id)
-        data_serializer = CategorySerializer(categorys,many=False)
+        category = Category.objects.get(id=id)
+        data_serializer = CategorySerializer(category, context={'request': request})  # Pass request context
         return Response({
-             'code': status.HTTP_200_OK,
+            'code': status.HTTP_200_OK,
             'message': 'Data retrieved successfully',
             'data': data_serializer.data
         })
-    
+
     except Category.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Category not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
         return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
-        })
-    
-    except Exception as e:
-        return Response({
-             'code': status.HTTP_400_BAD_REQUEST,
-            'message': str(e)
-        },status.HTTP_400_BAD_REQUEST)
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])

@@ -15,28 +15,13 @@ SECRET_KEY = 'django-insecure-%isa=p4jpn7ep1dee2)l1xlzk5(r29!_8@^^@&1ev$!-q$z+8^
 DEBUG = True
 
 PRODUCTION = True
+
 ALLOWED_HOSTS = ['*','hola.syscomatic.com']
 
 
 
 
-import os
 
-# For localhost
-if DEBUG:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    SITE_URL = 'http://127.0.0.1:8000'
-
-# For production
-else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    SITE_URL = 'https://hola.syscomatic.com'
-
-
-
-# Application definition
 INSTALLED_APPS = [
 
     'django.contrib.admin',
@@ -203,6 +188,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [STATIC_DIR]
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = MEDIA_DIR
