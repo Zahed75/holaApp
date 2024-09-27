@@ -14,3 +14,9 @@ class CategorySerializer(serializers.ModelSerializer):
     def get_products(self, obj):
         products = Product.objects.filter(category=obj)
         return ProductSerializer(products, many=True, context=self.context).data
+
+    def get_coverImage(self, obj):
+        request = self.context.get('request')
+        if obj.coverImage:
+            return request.build_absolute_uri(obj.coverImage.url)
+        return None

@@ -17,6 +17,16 @@ DEBUG = True
 PRODUCTION = True
 ALLOWED_HOSTS = ['*','hola.syscomatic.com']
 
+
+
+
+if DEBUG:
+    SITE_URL = 'http://127.0.0.1:8000'
+else:
+    SITE_URL = 'https://hola.syscomatic.com'
+
+
+
 # Application definition
 INSTALLED_APPS = [
 
@@ -208,7 +218,7 @@ SESSION_COOKIE_SECURE = True
 
 
 
-SITE_URL = 'https://hola.syscomatic.com'
+
 
 
 
