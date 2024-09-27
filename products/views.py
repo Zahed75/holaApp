@@ -46,7 +46,7 @@ def add_product(request):
             ProductImage.objects.create(product=product, image=image, image_type='gallery')
 
         # Serialize the product with images
-        product_data = ProductSerializer(product, context={'request': request}).data
+        product_data = ProductSerializer(product).data
 
         return JsonResponse({
             'message': 'Product added successfully!',
@@ -73,7 +73,7 @@ def add_inventory(request, id):
         payload = request.data.copy()
         payload['product'] = product.id
 
-        data_serializer = InventorySerializer(data=payload, context={'request': request})
+        data_serializer = InventorySerializer(data=payload)
         
         if data_serializer.is_valid():
             data_serializer.save()
@@ -138,7 +138,7 @@ def update_product(request, id):
                 ProductImage.objects.create(product=productObj, image=image)
 
         # Use the serializer for partial updates
-        serializer = ProductSerializer(productObj, data=data, partial=True, context={'request': request})
+        serializer = ProductSerializer(productObj, data=data, partial=True)
 
         if not serializer.is_valid():
             return Response({
@@ -174,7 +174,7 @@ def update_inventory(request,id):
 
     try:
         inventory = Inventory.objects.get(id=id)
-        serializers = InventorySerializer(inventory,data=request.data,partial=True,context={'request':request})
+        serializers = InventorySerializer(inventory,data=request.data,partial=True)
         if not serializers.is_valid():
             serializers.save()
             return Response({
@@ -252,7 +252,7 @@ def get_products(request):
     try:
         products = Product.objects.all()
         # Pass request context to the serializer to handle absolute URIs for image fields
-        data_serializer = ProductSerializer(products, many=True, context={'request': request})
+        data_serializer = ProductSerializer(products, many=True)
         return Response({
             'code': status.HTTP_200_OK,
             'message': 'Get All Products Fetched Successfully',
@@ -274,7 +274,7 @@ def get_products_by_id(request, id):
         product = Product.objects.get(id=id)
 
         # Pass the request context to the serializer
-        data_serializer = ProductSerializer(product, many=False, context={'request': request})
+        data_serializer = ProductSerializer(product, many=False)
 
         return Response({
             'code': status.HTTP_200_OK,
