@@ -3,6 +3,11 @@ from .models import Product, ProductImage, Category, Inventory
 from django.conf import settings
 
 
+class InventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Inventory
+        fields = ['size', 'quantity', 'barCode', 'available']
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
@@ -15,28 +20,21 @@ class ProductImageSerializer(serializers.ModelSerializer):
         # Return only the relative URL for the image
         return obj.image.url if obj.image and hasattr(obj.image, 'url') else None
 
+
+
 class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all(), many=True)
     images = ProductImageSerializer(many=True, required=False)
-    sizeCharts = serializers.SerializerMethodField()
-    featureImage = serializers.SerializerMethodField()
+    inventory = InventorySerializer(many=True, read_only=True)
 
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ['id', 'productName', 'productDescription', 'seoTitle', 'seoDescription', 'productShortDescription',
+                  'color', 'regularPrice', 'salePrice', 'saleStart', 'saleEnd', 'sizeCharts', 'fabric',
+                  'weight', 'dimension_length', 'dimension_width', 'dimension_height', 'featureImage',
+                  'created', 'updated', 'inventory', 'images']
 
     def get_sizeCharts(self, obj):
-        # Return only the relative URL for the size chart
         return obj.sizeCharts.url if obj.sizeCharts and hasattr(obj.sizeCharts, 'url') else None
 
     def get_featureImage(self, obj):
-        # Return only the relative URL for the feature image
         return obj.featureImage.url if obj.featureImage and hasattr(obj.featureImage, 'url') else None
-
-
-
-
-class InventorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Inventory
-        fields = '__all__'
