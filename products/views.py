@@ -108,13 +108,10 @@ def add_inventory(request, id):
 @permission_classes([IsAuthenticated])
 def update_product(request, id):
     try:
-        # Get the product object by its ID
         productObj = Product.objects.get(id=id)
 
-        # Copy request data
         data = request.data.copy()
 
-        # Handle category updates
         if 'category' in data:
             if isinstance(data['category'], str):
                 data.setlist('category', data['category'].split(','))  # Split string by commas
@@ -129,13 +126,15 @@ def update_product(request, id):
             productObj.sizeCharts = request.FILES['sizeCharts']
 
         # Handle product gallery images
-        if 'images' in request.FILES.getlist('images'):
-            # Clear existing images (optional)
-            ProductImage.objects.filter(product=productObj).delete()
+        new_images = request.FILES.getlist('images')
 
-            # Add new images
-            for image in request.FILES.getlist('images'):
-                ProductImage.objects.create(product=productObj, image=image)
+        if new_images:
+            # Clear existing gallery images only if new images are provided
+            ProductImage.objects.filter(product=productObj, image_type='gallery').delete()
+
+            # Add new images to the product
+            for image in new_images:
+                ProductImage.objects.create(product=productObj, image=image, image_type='gallery')
 
         # Use the serializer for partial updates
         serializer = ProductSerializer(productObj, data=data, partial=True)
@@ -161,7 +160,6 @@ def update_product(request, id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
-
 
 
 
@@ -267,14 +265,14 @@ def get_products(request):
         })
 
 
+
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_products_by_id(request, id):
     try:
-        # Fetch product by ID
         product = Product.objects.get(id=id)
-
-        # Pass the request context to the serializer
         data_serializer = ProductSerializer(product, many=False, context={'request': request})
 
         return Response({

@@ -5,33 +5,28 @@ from .modules import *
 @api_view(['POST'])
 def create_order(request):
     try:
-        user = request.user  # Get the user from the request
+        user = request.user
         shipping_address_id = request.data.get('shipping_address_id')
         coupon_code = request.data.get('coupon_code', None)
         items = request.data.get('items', [])
-        shipping_cost = request.data.get('shipping_cost')  # Fetch shipping_cost from the request
+        shipping_cost = request.data.get('shipping_cost')
 
         try:
-            # Validate shipping address
             shipping_address = ShippingAddress.objects.get(id=shipping_address_id, customer__user=user)
 
-            # Validate coupon code if provided
             coupon = None
             if coupon_code:
                 coupon = Discount.objects.get(code=coupon_code)
-
-            # Create the order
             order = Order.objects.create(
                 user=user,
                 shipping_address=shipping_address,
                 coupon_code=coupon,
-                shipping_cost=Decimal(shipping_cost)  # Set the shipping cost from the request
+                shipping_cost=Decimal(shipping_cost)
             )
 
-            # Create order items
             for item in items:
                 product = Product.objects.get(id=item['product_id'])
-                # Use the salePrice if available, otherwise use regularPrice
+
                 price_to_use = product.salePrice if product.salePrice else product.regularPrice
 
                 OrderItem.objects.create(
@@ -41,10 +36,9 @@ def create_order(request):
                     price=price_to_use
                 )
 
-            # Calculate totals (including VAT and grand total)
             order.calculate_totals()
 
-            # Prepare response data
+
             order_details = {
                 "order_id": order.id,
                 "user": order.user.username,
@@ -92,6 +86,26 @@ def create_order(request):
                 "message": "Invalid coupon code"
             }, status=status.HTTP_400_BAD_REQUEST)
 
+
+    except Exception as e:
+        return Response({
+            "code": 500, "message": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_orders(request):
+    try:
+        all_orders = Order.objects.all()
+        data_serializer = OrderSerializer(all_orders, many=True)
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': data_serializer.data,
+            'data': data_serializer.data
+        })
 
     except Exception as e:
         return Response({
