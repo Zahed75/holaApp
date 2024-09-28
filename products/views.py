@@ -250,7 +250,7 @@ def inventory_delete(request,id):
 def get_products(request):
     try:
         products = Product.objects.all()
-        # Pass request context to the serializer to handle absolute URIs for image fields
+
         data_serializer = ProductSerializer(products, many=True, context={'request': request})
 
         return Response({

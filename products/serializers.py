@@ -25,16 +25,24 @@ class ProductImageSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, required=False)
     inventory = InventorySerializer(many=True, read_only=True)
+    sizeCharts = serializers.SerializerMethodField()  # Add this field to include sizeCharts
+    featureImage = serializers.SerializerMethodField()  # Add this field to include featureImage
+    is_inventory_available = serializers.SerializerMethodField()  # Add this field to check inventory availability
 
     class Meta:
         model = Product
-        fields = ['id', 'productName', 'productDescription', 'seoTitle', 'seoDescription', 'productShortDescription',
-                  'color', 'regularPrice', 'salePrice', 'saleStart', 'saleEnd', 'sizeCharts', 'fabric',
-                  'weight', 'dimension_length', 'dimension_width', 'dimension_height', 'featureImage',
-                  'created', 'updated', 'inventory', 'images']
+        fields = [
+            'id', 'productName', 'productDescription', 'seoTitle', 'seoDescription', 'productShortDescription',
+            'color', 'regularPrice', 'salePrice', 'saleStart', 'saleEnd', 'sizeCharts', 'fabric',
+            'weight', 'dimension_length', 'dimension_width', 'dimension_height', 'featureImage',
+            'created', 'updated', 'inventory', 'images', 'is_inventory_available'
+        ]
 
     def get_sizeCharts(self, obj):
         return obj.sizeCharts.url if obj.sizeCharts and hasattr(obj.sizeCharts, 'url') else None
 
     def get_featureImage(self, obj):
         return obj.featureImage.url if obj.featureImage and hasattr(obj.featureImage, 'url') else None
+
+    def get_is_inventory_available(self, obj):
+        return obj.inventory.exists() if hasattr(obj, 'inventory') and obj.inventory.exists() else False
