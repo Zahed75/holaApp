@@ -16,11 +16,7 @@ DEBUG = True
 
 PRODUCTION = True
 
-ALLOWED_HOSTS = ['*','hola.syscomatic.com']
-
-
-
-
+ALLOWED_HOSTS = ['*', 'hola.syscomatic.com']
 
 INSTALLED_APPS = [
 
@@ -58,7 +54,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 
 ROOT_URLCONF = 'holaApp.urls'
 
@@ -125,7 +120,6 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-
 SPECTACULAR_SETTINGS = {
     'TITLE': 'HolaGO MultiPlatform Ecommerce Solution by-Zahed Hasan',
     'DESCRIPTION': 'Its a multitenant Application User can create'
@@ -135,11 +129,6 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
 }
-
-
-
-
-
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=5),
@@ -168,8 +157,6 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_SERIALIZER': 'rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer',
 }
 
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -181,14 +168,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-
-
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [STATIC_DIR]
-
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = MEDIA_DIR
@@ -200,22 +183,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "https://hola.syscomatic.com"
+    "https://holagoadmin.vercel.app",
+    "https://holago-customer.vercel.app",
+
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://hola.syscomatic.com"
+    "https://hola.syscomatic.com",
+    "https://holagoadmin.vercel.app",
+    "https://holago-customer.vercel.app",
 ]
 
 # In case you're using HTTPS in production
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
-
-
-
-
-
-
 
 # Email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
