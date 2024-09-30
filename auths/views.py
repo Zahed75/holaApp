@@ -1,24 +1,27 @@
+from customer.models import Customer
 from .modules import *
 from auths.models import User
+
+
 
 API_KEY = '3cbe6feb4dc1d795ce934790b238727b013f542a'
 
 @api_view(['POST'])
 def register_user(request):
     try:
-      
         role = request.data.get('role')
         if role not in dict(UserProfile.ROLE_CHOICES):
             return Response({'error': 'Invalid role'}, status=status.HTTP_400_BAD_REQUEST)
 
+        required_fields = ['phone_number']
+
         if role == 'outlet_manager':
-      
-            required_fields = ['first_name', 'last_name', 'email', 'phone_number']
+            required_fields += ['first_name', 'last_name', 'email']
+
             for field in required_fields:
                 if not request.data.get(field):
                     return Response({'error': f'Missing field: {field}'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            
+
             user = User.objects.create_user(
                 username=request.data.get('email'),
                 email=request.data.get('email'),
@@ -26,16 +29,15 @@ def register_user(request):
                 last_name=request.data.get('last_name')
             )
         else:
- 
-            if not request.data.get('phone_number'):
-                return Response({'error': 'Missing field: phone_number'}, status=status.HTTP_400_BAD_REQUEST)
+            for field in required_fields:
+                if not request.data.get(field):
+                    return Response({'error': f'Missing field: {field}'}, status=status.HTTP_400_BAD_REQUEST)
 
-      
             user = User.objects.create_user(
                 username=request.data.get('phone_number'),
                 email=f'{request.data.get("phone_number")}@example.com',  # Dummy email
-                first_name='',  
-                last_name=''   
+                first_name='',
+                last_name=''
             )
 
         # Generate OTP
@@ -54,6 +56,14 @@ def register_user(request):
             otp_created_at=timezone.now()
         )
         profile.save()
+
+        # Create a Customer instance
+        customer = Customer.objects.create(
+            user=user,
+            name=request.data.get('first_name', '') + ' ' + request.data.get('last_name', ''),
+            email=request.data.get('email', f'{request.data.get("phone_number")}@example.com'),  # Dummy email for customers
+            dob=request.data.get('dob'),  # Assuming you're collecting date of birth for customers
+        )
 
         return Response({
             'id': profile.unique_user_id,  # Return the unique user ID here
@@ -76,14 +86,6 @@ def register_user(request):
                 }
             ]
         })
-
-
-
-
-
-
-
-
 
 @api_view(['POST'])
 def verify_otp(request):
@@ -121,7 +123,6 @@ def verify_otp(request):
                 }
             ]
         })
-    
 
 
 
@@ -263,19 +264,23 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
 
 
-
 @api_view(['GET'])
 def all_users(request):
     try:
-        all_users = User.objects.all()
+
+        all_users = User.objects.exclude(id__in=Customer.objects.values('user_id'))
+
+        # Serialize the filtered list of users
         data_serializer = UserSerializer(all_users, many=True, context={'request': request})
+
         return Response({
             'code': status.HTTP_200_OK,
-            'message': "Get All Users Fetched",
+            'message': "All Users Fetched Successfully",
             'data': data_serializer.data
-        })
+        }, status=status.HTTP_200_OK)
+
     except Exception as e:
         return Response({
             "code": status.HTTP_400_BAD_REQUEST,
             "message": str(e)
-        })
+        }, status=status.HTTP_400_BAD_REQUEST)

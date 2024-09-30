@@ -6,7 +6,35 @@
   <component name="ChangeListManager">
     <list default="true" id="95e6d269-76f8-41cb-8858-253ecc3967ae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auths/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auths/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/auths/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/auths/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auths/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/auths/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/category/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/category/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0002_shippingaddress_city_shippingaddress_state_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0003_alter_shippingaddress_address.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/customer/modules.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/modules.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/holaApp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/holaApp/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/migrations/0002_order_coupon_code_order_discount_amount.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/migrations/0003_rename_shippingaddress_order_shipping_address_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/migrations/0004_orderitem_color_orderitem_size.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/order/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlet/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlet/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0002_remove_product_featureimage_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0003_product_featureimage_alter_productimage_image_type.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/__init__.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +154,7 @@
       <workItem from="1727627200146" duration="4218000" />
       <workItem from="1727642210123" duration="4193000" />
       <workItem from="1727688245686" duration="425000" />
-      <workItem from="1727691051052" duration="945000" />
+      <workItem from="1727691051052" duration="13862000" />
     </task>
     <servers />
   </component>

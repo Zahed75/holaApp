@@ -13,7 +13,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ['name', 'dob', 'email', 'wishlist', 'club_points', 'shipping_addresses']
+        fields = ['id','name', 'dob', 'email', 'club_points', 'shipping_addresses']
 
     def update(self, instance, validated_data):
         shipping_addresses_data = validated_data.pop('shipping_addresses', [])
@@ -22,7 +22,6 @@ class CustomerSerializer(serializers.ModelSerializer):
         instance.name = validated_data.get('name', instance.name)
         instance.dob = validated_data.get('dob', instance.dob)
         instance.email = validated_data.get('email', instance.email)
-        instance.wishlist = validated_data.get('wishlist', instance.wishlist)
         instance.club_points = validated_data.get('club_points', instance.club_points)
         instance.save()
 
