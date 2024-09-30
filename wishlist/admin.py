@@ -6,7 +6,7 @@ from .models import Wishlist
 
 @admin.register(Wishlist)
 class WishlistAdmin(admin.ModelAdmin):
-    list_display = ('user', 'product', 'created_at')  # Fields to display in the list view
+    list_display = ('id','user', 'product', 'created_at')  # Fields to display in the list view
     search_fields = ('user__phone_number', 'product__productName')  # Enable searching by user phone number or product name
     list_filter = ('user', 'product')  # Add filters for user and product
     ordering = ('-created_at',)  # Order by creation date descending

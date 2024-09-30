@@ -1,17 +1,18 @@
 from rest_framework import serializers
 from wishlist.models import Wishlist
 from products.models import *
-# serializers.py
+from customer.models import *
+
 
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'productName', 'productDescription', 'regularPrice', 'salePrice', 'featureImage']  # Add fields as necessary
+        fields = ['id', 'productName', 'productDescription', 'regularPrice', 'salePrice', 'featureImage']
 
 class WishlistSerializer(serializers.ModelSerializer):
-    products = serializers.ListField(child=serializers.IntegerField(), write_only=True)  # Accept a list of product IDs
+    products = serializers.ListField(child=serializers.IntegerField(), write_only=True)
 
     class Meta:
         model = Wishlist
@@ -19,15 +20,26 @@ class WishlistSerializer(serializers.ModelSerializer):
         read_only_fields = ['user', 'created_at']
 
     def create(self, validated_data):
-        product_ids = validated_data.pop('products')  # Get the list of product IDs
-        user = self.context['request'].user  # Get the logged-in user
-        validated_data.pop('user', None)  # Remove 'user' if it exists
+        product_ids = validated_data.pop('products')
+        user = self.context['request'].user
 
-        # Create a wishlist item for each product ID
-        wishlist_items = []
+        # Ensure that the authenticated user has a corresponding Customer object
+        try:
+            customer = Customer.objects.get(user=user)  # Fetch the customer instance
+        except Customer.DoesNotExist:
+            raise serializers.ValidationError("No customer profile associated with this user.")
+
+        wishlist_items_with_products = []
+
         for product_id in product_ids:
             product = Product.objects.get(id=product_id)
-            wishlist_item = Wishlist.objects.create(user=user.userprofile, product=product)
-            wishlist_items.append(wishlist_item)
+            wishlist_item = Wishlist.objects.create(user=customer, product=product)
 
-        return wishlist_items  # Return the list of created wishlist items
+            wishlist_items_with_products.append({
+                'id': wishlist_item.id,
+                'user': wishlist_item.user.id,
+                'product': ProductSerializer(product).data,
+                'created_at': wishlist_item.created_at
+            })
+
+        return wishlist_items_with_products
