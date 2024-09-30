@@ -5,8 +5,35 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="95e6d269-76f8-41cb-8858-253ecc3967ae" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/media/categories/8.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/05tspNCOuENlSjAgg_CP0Wujz.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/05tspNCOuENlSjAgg_icAkTFb.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/358714794_2202332286631578_1219068887442216073_n_MxXC9JB.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/358714794_2202332286631578_1219068887442216073_n_fljstcw.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/365321550_290598243557189_8634494778362696419_n_DENa3iq.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/products/365321550_290598243557189_8634494778362696419_n_ULPrmUV.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/size_charts/358714794_2202332286631578_1219068887442216073_n_McJSxHC.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/media/size_charts/358714794_2202332286631578_1219068887442216073_n_yqUMATY.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/customer/modules.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/modules.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auths/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/auths/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/category/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/category/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/category/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/category/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/customer/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0002_shippingaddress_city_shippingaddress_state_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0003_alter_shippingaddress_address.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0004_alter_customer_wishlist.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/customer/migrations/0005_remove_customer_wishlist.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/discount/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/discount/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/holaApp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/holaApp/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/order/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/outlet/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/outlet/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wishlist/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/wishlist/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wishlist/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/wishlist/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wishlist/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/wishlist/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wishlist/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/wishlist/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wishlist/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/wishlist/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wishlist/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/wishlist/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -126,7 +153,7 @@
       <workItem from="1727627200146" duration="4218000" />
       <workItem from="1727642210123" duration="4193000" />
       <workItem from="1727688245686" duration="425000" />
-      <workItem from="1727691051052" duration="945000" />
+      <workItem from="1727691051052" duration="21778000" />
     </task>
     <servers />
   </component>

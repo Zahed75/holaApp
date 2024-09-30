@@ -103,6 +103,7 @@ def add_inventory(request, id):
 
 
 
+
 @api_view(['PUT'])
 @parser_classes([MultiPartParser])
 @permission_classes([IsAuthenticated])
@@ -110,35 +111,10 @@ def update_product(request, id):
     try:
         productObj = Product.objects.get(id=id)
 
-        data = request.data.copy()
+        # Initialize the serializer with the instance to update
+        serializer = ProductSerializer(productObj, data=request.data, partial=True)
 
-        if 'category' in data:
-            if isinstance(data['category'], str):
-                data.setlist('category', data['category'].split(','))  # Split string by commas
-            elif isinstance(data['category'], list):
-                data['category'] = [int(cat_id) for cat_id in data['category']]  # Convert to list of integers
-
-        # Handle image fields explicitly
-        if 'featureImage' in request.FILES:
-            productObj.featureImage = request.FILES['featureImage']
-
-        if 'sizeCharts' in request.FILES:
-            productObj.sizeCharts = request.FILES['sizeCharts']
-
-        # Handle product gallery images
-        new_images = request.FILES.getlist('images')
-
-        if new_images:
-            # Clear existing gallery images only if new images are provided
-            ProductImage.objects.filter(product=productObj, image_type='gallery').delete()
-
-            # Add new images to the product
-            for image in new_images:
-                ProductImage.objects.create(product=productObj, image=image, image_type='gallery')
-
-        # Use the serializer for partial updates
-        serializer = ProductSerializer(productObj, data=data, partial=True)
-
+        # Ensure the serializer validates correctly
         if not serializer.is_valid():
             return Response({
                 'status': 400,
@@ -146,7 +122,25 @@ def update_product(request, id):
                 'message': 'Something went wrong while validating the data'
             })
 
-        # Save the updated product
+        # Handle file uploads separately
+        if 'featureImage' in request.FILES:
+            productObj.featureImage = request.FILES['featureImage']
+
+        if 'sizeCharts' in request.FILES:
+            productObj.sizeCharts = request.FILES['sizeCharts']
+
+        # Handle product gallery images
+        if 'images' in request.FILES:
+            new_images = request.FILES.getlist('images')
+            if new_images:
+                # Clear existing gallery images only if new images are provided
+                ProductImage.objects.filter(product=productObj, image_type='gallery').delete()
+
+                # Add new images to the product
+                for image in new_images:
+                    ProductImage.objects.create(product=productObj, image=image, image_type='gallery')
+
+        # Save the updated product after handling all fields
         serializer.save()
 
         return Response({
@@ -155,11 +149,20 @@ def update_product(request, id):
             'message': "Product updated successfully"
         })
 
+    except Product.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': "Product not found"
+        })
     except Exception as e:
         return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+
+
 
 
 

@@ -20,6 +20,7 @@ urlpatterns = [
     path('category/',include('category.urls')),
     path('customer/',include('customer.urls')),
     path('discount/',include('discount.urls')),
+    path('wishlist/',include('wishlist.urls')),
 
 
 ]

@@ -41,3 +41,4 @@ from rest_framework.response import Response
 from rest_framework import status
 import random
 from auths.models import UserProfile
+from products.models import *

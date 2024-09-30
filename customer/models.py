@@ -1,13 +1,13 @@
 # customer/models.py
 from django.db import models
-from django.contrib.auth.models import User  # Ensure correct import
+from django.contrib.auth.models import User
+from products.models import *
 
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customer')
     name = models.CharField(max_length=255)
     dob = models.DateField(null=True, blank=True)
     email = models.EmailField(max_length=254, unique=True)
-    wishlist = models.TextField(blank=True, null=True)
     club_points = models.IntegerField(default=0)
 
     def __str__(self):

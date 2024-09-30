@@ -8,7 +8,7 @@ from .modules import *
 @permission_classes([IsAuthenticated])
 def add_Category(request):
     try:
-        payload = request.data
+        payload = request.data.copy()
         payload['user'] = request.user.id  # Set the user from the request
 
         # Serialize the data with image handling
