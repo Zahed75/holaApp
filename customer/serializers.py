@@ -1,19 +1,19 @@
 from rest_framework import serializers
 from .models import *
-
+from wishlist.serializers import WishlistSerializer
 
 
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShippingAddress
-        fields = ['name', 'phone_number', 'address', 'area']
+        fields = ['id','name', 'phone_number', 'address', 'area']
 
 class CustomerSerializer(serializers.ModelSerializer):
     shipping_addresses = ShippingAddressSerializer(many=True, write_only=True)
-
+    wishlist = WishlistSerializer(many=True, read_only=True, source='wishlists')
     class Meta:
         model = Customer
-        fields = ['id','name', 'dob', 'email', 'club_points', 'shipping_addresses']
+        fields = ['id','name', 'dob', 'email', 'club_points', 'shipping_addresses','wishlist']
 
     def update(self, instance, validated_data):
         shipping_addresses_data = validated_data.pop('shipping_addresses', [])
@@ -23,6 +23,7 @@ class CustomerSerializer(serializers.ModelSerializer):
         instance.dob = validated_data.get('dob', instance.dob)
         instance.email = validated_data.get('email', instance.email)
         instance.club_points = validated_data.get('club_points', instance.club_points)
+        instance.shipping_addresses = validated_data.get('shipping_addresses', instance.shipping_addresses)
         instance.save()
 
         # Update or create ShippingAddress instances

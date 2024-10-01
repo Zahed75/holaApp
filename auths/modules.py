@@ -38,4 +38,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 import random
-
+from customer.models import Customer
+from wishlist.models import Wishlist
+from wishlist.serializers import WishlistSerializer
+from customer.serializers import CustomerSerializer

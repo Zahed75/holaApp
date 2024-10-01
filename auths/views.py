@@ -40,6 +40,10 @@ def register_user(request):
                 last_name=''
             )
 
+        # Ensure the user ID is properly assigned
+        if not user.id:
+            user.save()
+
         # Generate OTP
         otp = str(random.randint(1000, 9999))
 
@@ -87,30 +91,62 @@ def register_user(request):
             ]
         })
 
+
+
+
 @api_view(['POST'])
 def verify_otp(request):
     phone_number = request.data.get('phone_number')
     otp = request.data.get('otp')
 
     try:
+        # Fetch the UserProfile based on the phone number
         profile = UserProfile.objects.get(phone_number=phone_number)
+
+        # Validate the OTP
         if profile.is_otp_valid(otp):
             profile.otp_verified = True
             profile.save()
 
-            # Generate tokens
-            refresh = RefreshToken.for_user(profile.user)
+            # Fetch the associated user and customer
+            user = profile.user
+            customer = Customer.objects.get(user=user)  # Fetch the customer linked to this user
+
+            # Generate tokens using Simple JWT
+            refresh = RefreshToken.for_user(user)
+
+            # Serialize the user and customer data
+            user_serializer = UserSerializer(user)
+            customer_serializer = CustomerSerializer(customer)
+
+            # Serialize the wishlist data and add it to the customer data
+            wishlist_serializer = WishlistSerializer(customer.wishlists.all(), many=True)
+
+            # Add the wishlist to the customer data
+            customer_data = customer_serializer.data
+            customer_data['wishlist'] = wishlist_serializer.data  # Embed wishlist in customer data
+
+            # Return the response with access token, user info, and customer info (with wishlist included)
             return Response({
                 'user': {
-                    'id': profile.unique_user_id,
-                    'role': profile.role,
+                    'id': user.id,  # Return correct user ID
+                    'unique_id': profile.unique_user_id,  # Return the unique user ID from profile
+                    'role': profile.role,  # Return the user role
                     'phone_number': profile.phone_number,
                     'access': str(refresh.access_token),
                     'refresh': str(refresh),
-                }
+                },
+                'customer': customer_data  # Customer info with embedded wishlist
             })
         else:
             return Response({'error': 'Invalid OTP or OTP expired'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'User profile not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    except Customer.DoesNotExist:
+        return Response({'error': 'Customer not found for this user'}, status=status.HTTP_404_NOT_FOUND)
+
     except Exception as e:
         return Response({
             "code": status.HTTP_401_UNAUTHORIZED,
@@ -127,8 +163,12 @@ def verify_otp(request):
 
 
 
-    
-        
+
+
+
+
+
+
 @api_view(['POST'])
 def resend_otp(request):
     phone_number = request.data.get('phone_number')
