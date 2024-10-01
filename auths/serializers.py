@@ -59,3 +59,4 @@ class OutletManagerSerializer(serializers.ModelSerializer):
         representation['last_name'] = instance.user.last_name
         representation['email'] = instance.user.email
         return representation
+
