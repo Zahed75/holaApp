@@ -98,11 +98,13 @@ def get_wishlist(request, user_id):
         # Fetch all wishlist items for the specified user
         wishlist_items = Wishlist.objects.filter(user__id=user_id)
 
+        # If no wishlist items are found, return an empty array with a success message
         if not wishlist_items.exists():
             return Response({
-                'code': status.HTTP_404_NOT_FOUND,
-                'message': 'No wishlist items found for this user'
-            }, status=status.HTTP_404_NOT_FOUND)
+                'code': status.HTTP_200_OK,
+                'message': 'No wishlist items found for this user',
+                'data': []  # Return an empty array
+            }, status=status.HTTP_200_OK)
 
         # Serialize the wishlist items and their associated products
         wishlist_data = []
@@ -118,7 +120,7 @@ def get_wishlist(request, user_id):
             'code': status.HTTP_200_OK,
             'message': 'Wishlist fetched successfully',
             'data': wishlist_data
-        })
+        }, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response({
