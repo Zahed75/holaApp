@@ -254,3 +254,30 @@ def get_all_customers(request):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['GET'])
+def get_customer_by_id(request,id):
+    try:
+     customers=Customer.objects.get(id=id)
+     data_serializer = CustomerSerializer(customers)
+     return Response({
+         'code': status.HTTP_200_OK,
+         'message': 'Customer Get Successfully',
+         'data': data_serializer.data
+     })
+
+    except Customer.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Customer not found'
+        },status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
+

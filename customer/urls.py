@@ -12,7 +12,8 @@ urlpatterns = [
    path('api/delete_address/<address_id>/', delete_shipping_address),
    path('api/get_address_by_id/<address_id>/',get_shipping_address),
    path('api/get_all_address/<customer_id>/',get_all_shipping_addresses),
-   path('api/get_all_customers/',get_all_customers)
+   path('api/get_all_customers/',get_all_customers),
+   path('api/get_customer/<id>',get_customer_by_id),
 
 
 

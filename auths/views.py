@@ -126,7 +126,6 @@ def verify_otp(request):
             customer_data = customer_serializer.data
             customer_data['wishlist'] = wishlist_serializer.data  # Embed wishlist in customer data
 
-            # Return the response with access token, user info, and customer info (with wishlist included)
             return Response({
                 'user': {
                     'id': user.id,  # Return correct user ID
