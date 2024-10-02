@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'reporting',
     'settings',
     'wishlist',
+    'cart'
 
 ]
 
