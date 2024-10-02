@@ -135,8 +135,9 @@ def verify_otp(request):
                     'phone_number': profile.phone_number,
                     'access': str(refresh.access_token),
                     'refresh': str(refresh),
+                    'customer': customer_data
                 },
-                'customer': customer_data  # Customer info with embedded wishlist
+                 # Customer info with embedded wishlist
             })
         else:
             return Response({'error': 'Invalid OTP or OTP expired'}, status=status.HTTP_400_BAD_REQUEST)
