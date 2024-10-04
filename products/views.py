@@ -330,3 +330,64 @@ def get_inventory_by_product(request, product_id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['GET'])
+def filter_products(request):
+    # Get query parameters
+    search_query = request.query_params.get('products', None)
+    category_id = request.query_params.get('category', None)
+    size = request.query_params.get('size', None)
+    quantity = request.query_params.get('Quantity', None)
+    color = request.query_params.get('color', None)
+    regular_price = request.query_params.get('regularPrice', None)
+    sale_price = request.query_params.get('salePrice', None)
+    bar_code = request.query_params.get('barCode', None)
+    fabric = request.query_params.get('fabric', None)
+
+    # Start with all products
+    queryset = Product.objects.all()
+
+    # Apply search filtering
+    if search_query:
+        queryset = queryset.filter(
+            Q(productName__icontains=search_query) |
+            Q(productDescription__icontains=search_query) |
+            Q(seoTitle__icontains=search_query)
+        )
+
+    # Filter by category
+    if category_id:
+        queryset = queryset.filter(category__id=category_id)
+
+    # Filter by color
+    if color:
+        queryset = queryset.filter(color__iexact=color)
+
+    # Filter by regular price
+    if regular_price:
+        queryset = queryset.filter(regularPrice=regular_price)
+
+    # Filter by sale price
+    if sale_price:
+        queryset = queryset.filter(salePrice=sale_price)
+
+    # Filter by fabric
+    if fabric:
+        queryset = queryset.filter(fabric__icontains=fabric)
+
+    # Inventory-related filters
+    if size or quantity or bar_code:
+        queryset = queryset.filter(
+            inventory__size__iexact=size if size else None,
+            inventory__quantity=quantity if quantity else None,
+            inventory__barCode=bar_code if bar_code else None
+        ).distinct()
+
+    # Serialize the filtered queryset
+    serializer = ProductSerializer(queryset, many=True)
+
+    return Response(serializer.data)
