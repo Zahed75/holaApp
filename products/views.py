@@ -272,7 +272,7 @@ def get_products(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+
 def get_products_by_id(request, id):
     try:
         product = Product.objects.get(id=id)
