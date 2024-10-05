@@ -6,7 +6,7 @@ from wishlist.serializers import WishlistSerializer
 class ShippingAddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShippingAddress
-        fields = ['id','name', 'phone_number', 'address', 'area']
+        fields = ['id', 'name', 'phone_number', 'address', 'area', 'street', 'city', 'state', 'zip_code']
 
 
 

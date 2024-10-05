@@ -63,11 +63,11 @@ def update_profile(request, id):
 # Add Shipping Address
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+
 def add_shipping_address(request, customer_id):
     try:
         # Fetch the customer by ID
         customer = Customer.objects.get(id=customer_id)
-
 
         # Serialize the request data (Address details)
         serializer = ShippingAddressSerializer(data=request.data)
@@ -100,6 +100,11 @@ def add_shipping_address(request, customer_id):
             'status': 400,
             'message': str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
 
 
 # Edit Shipping Address
