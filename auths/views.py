@@ -3,8 +3,95 @@ from .modules import *
 from auths.models import User
 
 
+#
+# API_KEY = '3cbe6feb4dc1d795ce934790b238727b013f542a'
+#
+# @api_view(['POST'])
+# def register_user(request):
+#     try:
+#         role = request.data.get('role')
+#         if role not in dict(UserProfile.ROLE_CHOICES):
+#             return Response({'error': 'Invalid role'}, status=status.HTTP_400_BAD_REQUEST)
+#
+#         required_fields = ['phone_number']
+#
+#         if role == 'outlet_manager':
+#             required_fields += ['first_name', 'last_name', 'email']
+#
+#             for field in required_fields:
+#                 if not request.data.get(field):
+#                     return Response({'error': f'Missing field: {field}'}, status=status.HTTP_400_BAD_REQUEST)
+#
+#             user = User.objects.create_user(
+#                 username=request.data.get('email'),
+#                 email=request.data.get('email'),
+#                 first_name=request.data.get('first_name'),
+#                 last_name=request.data.get('last_name')
+#             )
+#         else:
+#             for field in required_fields:
+#                 if not request.data.get(field):
+#                     return Response({'error': f'Missing field: {field}'}, status=status.HTTP_400_BAD_REQUEST)
+#
+#             user = User.objects.create_user(
+#                 username=request.data.get('phone_number'),
+#                 email=f'{request.data.get("phone_number")}@example.com',  # Dummy email
+#                 first_name='',
+#                 last_name=''
+#             )
+#
+#         # Ensure the user ID is properly assigned
+#         if not user.id:
+#             user.save()
+#
+#         # Generate OTP
+#         otp = str(random.randint(1000, 9999))
+#
+#         # Send OTP via SMS
+#         message = f"Your OTP code is {otp}. Please use this to verify your account."
+#         response = send_sms(request.data.get('phone_number'), message, API_KEY)
+#
+#         # Create a UserProfile with the provided role
+#         profile = UserProfile.objects.create(
+#             user=user,
+#             role=role,
+#             phone_number=request.data.get('phone_number'),
+#             otp=otp,
+#             otp_created_at=timezone.now()
+#         )
+#         profile.save()
+#
+#         # Create a Customer instance
+#         customer = Customer.objects.create(
+#             user=user,
+#             name=request.data.get('first_name', '') + ' ' + request.data.get('last_name', ''),
+#             email=request.data.get('email', f'{request.data.get("phone_number")}@example.com'),  # Dummy email for customers
+#             dob=request.data.get('dob'),  # Assuming you're collecting date of birth for customers
+#         )
+#
+#         return Response({
+#             'id': profile.unique_user_id,  # Return the unique user ID here
+#             'role': profile.role,
+#             'phone_number': profile.phone_number,
+#             'otp': profile.otp,
+#             'is_verified': profile.otp_verified,
+#             'message': 'User registered successfully. OTP sent to the phone number.'
+#         }, status=status.HTTP_201_CREATED)
+#
+#     except Exception as e:
+#         return Response({
+#             "code": status.HTTP_401_UNAUTHORIZED,
+#             "message": str(e),
+#             "status_code": 401,
+#             "errors": [
+#                 {
+#                     "status_code": 401,
+#                     "message": str(e)
+#                 }
+#             ]
+#         })
+#
 
-API_KEY = '3cbe6feb4dc1d795ce934790b238727b013f542a'
 
 @api_view(['POST'])
 def register_user(request):
@@ -49,7 +136,7 @@ def register_user(request):
 
         # Send OTP via SMS
         message = f"Your OTP code is {otp}. Please use this to verify your account."
-        response = send_sms(request.data.get('phone_number'), message, API_KEY)
+        response = send_sms(request.data.get('phone_number'), message)
 
         # Create a UserProfile with the provided role
         profile = UserProfile.objects.create(
@@ -90,7 +177,6 @@ def register_user(request):
                 }
             ]
         })
-
 
 
 
@@ -266,10 +352,9 @@ def tokenVerify(request):
 
 
 
-API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    permission_classes = (permissions.AllowAny,) 
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request, *args, **kwargs):
         phone_number = request.data.get('phone_number')
@@ -287,12 +372,12 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
             # Send OTP via SMS
             message = f"Your OTP is {otp}. It is valid for 5 minutes."
-            send_sms(phone_number, message, api_key=API_KEY,)
+            send_sms(phone_number, message)  # No need to pass the API key manually
 
             return Response({
                 "code": status.HTTP_200_OK,
                 "message": "OTP sent successfully. Please verify to continue.",
-                "otp":otp
+                "otp": otp
             })
 
         except UserProfile.DoesNotExist:

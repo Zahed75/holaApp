@@ -1,3 +1,4 @@
+from auths.models import UserProfile
 from products.models import Inventory
 from .modules import *
 
@@ -5,6 +6,7 @@ from .modules import *
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+
 def create_order(request):
     try:
         user = request.user
@@ -33,12 +35,16 @@ def create_order(request):
                     "message": "Invalid coupon code"
                 }, status=status.HTTP_400_BAD_REQUEST)
 
+        # Generate a unique order ID
+        order_id = generate_unique_order_id()
+
         # Create the order
         order = Order.objects.create(
             user=user,
             shipping_address=shipping_address,
             coupon_code=coupon,
-            shipping_cost=Decimal(shipping_cost)
+            shipping_cost=Decimal(shipping_cost),
+            order_id=order_id
         )
 
         # Loop through each item in the request to create OrderItem entries
@@ -49,13 +55,9 @@ def create_order(request):
             color = item.get('color')
 
             try:
-                # Retrieve the product
+
                 product = Product.objects.get(id=product_id)
-
-                # Retrieve the inventory based on product and size
                 inventory = Inventory.objects.get(product=product, size=size)
-
-                # Check if enough quantity is available
                 if inventory.quantity < quantity:
                     return Response({
                         "code": 400,
@@ -70,10 +72,9 @@ def create_order(request):
                     order=order,
                     product=product,
                     quantity=quantity,
-                    price=price_to_use
+                    price=price_to_use,
+                    color=color
                 )
-
-                # Deduct the quantity from inventory
                 inventory.quantity -= quantity
                 inventory.save()
 
@@ -94,7 +95,7 @@ def create_order(request):
 
         # Prepare the order details response
         order_details = {
-            "order_id": order.id,
+            "order_id": order.order_id,  # Return the custom order ID
             "user": order.user.username,
             "shipping_address": {
                 "name": shipping_address.name,
@@ -110,8 +111,8 @@ def create_order(request):
                 {
                     "product_id": item.product.id,
                     "product_name": item.product.productName,
-                    "size": inventory.size,  # Added size here
-                    "color": product.color,  # Added color here
+                    "size": inventory.size,
+                    "color": product.color,
                     "quantity": item.quantity,
                     "price": item.price,
                 } for item in order.order_items.all()
@@ -135,6 +136,15 @@ def create_order(request):
             "message": str(e)
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+def generate_unique_order_id():
+    while True:
+        random_number = random.randint(10000, 99999)
+        order_id = f"HLG{random_number}"
+
+        # Check if the order_id already exists
+        if not Order.objects.filter(order_id=order_id).exists():
+            return order_id
+
 
 
 
@@ -157,3 +167,94 @@ def get_orders(request):
             "code": 500, "message": str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+
+
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def update_order_status(request):
+    try:
+        order_id = request.data.get('order_id')  # This is the order_id in 'HLG#XXXXX' format
+        new_status = request.data.get('new_status')
+
+        # Validate input
+        if not order_id or not new_status:
+            return Response({'error': 'Order ID and new status are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if the order exists using 'order_id' instead of 'id'
+        try:
+            order = Order.objects.get(order_id=order_id)  # Change here
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the order status
+        order.status = new_status
+        order.save()
+
+        # Get the UserProfile associated with the user
+        user_profile = UserProfile.objects.get(user=order.user)  # Access the UserProfile model to get phone_number
+        phone_number = user_profile.phone_number
+
+        # Prepare SMS content including order value and status
+        message = (
+            f"Dear Customer, your order ID {order.order_id} status has been updated to '{new_status}'. "
+            f"Order Value: BDT {order.grand_total:.2f}. Thank you for shopping with us."
+        )
+
+        # Send SMS with order details
+        response = send_sms(phone_number, message)
+
+        # Return success response
+        return Response({
+            'order_id': order.order_id,  # Using 'order_id' field here
+            'new_status': order.status,
+            'message': 'Order status updated and SMS sent to the customer.'
+        }, status=status.HTTP_200_OK)
+
+    except UserProfile.DoesNotExist:
+        return Response({'error': 'UserProfile not found for this user.'}, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({
+            "code": status.HTTP_400_BAD_REQUEST,
+            "message": str(e),
+            "errors": [{"message": str(e)}]
+        }, status=status.status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+def get_order_details(request, order_id):
+    try:
+        # Fetch the order using the order_id
+        order_details = Order.objects.get(order_id=order_id)
+        print(order_details.order_id)
+
+        # Serialize the order details
+        serializer = OrderSerializer(order_details)
+
+        # Return successful response with order data
+        return Response({
+            "code": status.HTTP_200_OK,
+            "message": "Order details retrieved successfully",
+            "data": serializer.data
+        }, status=status.HTTP_200_OK)
+
+    except Order.DoesNotExist:
+        # Specific exception for when the order does not exist
+        return Response({
+            "code": status.HTTP_404_NOT_FOUND,
+            "message": "Order not found."
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        # Handle any other exceptions
+        return Response({
+            "code": status.HTTP_400_BAD_REQUEST,
+            "message": str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
