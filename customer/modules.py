@@ -42,3 +42,5 @@ from rest_framework import status
 import random
 from auths.models import UserProfile
 from products.models import *
+from products.models import Inventory
+from auths.models import *

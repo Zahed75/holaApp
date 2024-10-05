@@ -303,13 +303,8 @@ def get_products_by_id(request, id):
 @api_view(['GET'])
 def get_inventory_by_product(request, product_id):
     try:
-        # Fetch the product using product_id
         product = Product.objects.get(id=product_id)
-
-        # Get all inventory related to this product
         inventory = Inventory.objects.filter(product=product)
-
-        # Serialize the inventory data
         serializer = InventorySerializer(inventory, many=True)
 
         # Return serialized data

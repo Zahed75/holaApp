@@ -5,6 +5,7 @@ from customer.models import ShippingAddress
 from discount.models import Discount
 from products.models import Product
 from decimal import Decimal
+import random
 
 
 class Order(models.Model):
@@ -17,6 +18,7 @@ class Order(models.Model):
     ]
 
     user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
+    order_id = models.CharField(max_length=10, unique=True, editable=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     shipping_address = models.ForeignKey(ShippingAddress, related_name='orders', on_delete=models.CASCADE)
     shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -43,6 +45,21 @@ class Order(models.Model):
         self.grand_total = total_price + self.shipping_cost
         self.save()
 
+    def save(self, *args, **kwargs):
+        """Override save method to create a unique order ID."""
+        if not self.order_id:  # Check if order_id is not set
+            self.order_id = self.generate_unique_order_id()
+        super().save(*args, **kwargs)
+
+    def generate_unique_order_id(self):
+        """Generate a unique order ID in the format 'HLG#XXXXX'."""
+        while True:
+            random_number = random.randint(10000, 99999)
+            order_id = f"HLG#{random_number}"
+
+            # Check if the order_id already exists
+            if not Order.objects.filter(order_id=order_id).exists():
+                return order_id
 
 
 class OrderItem(models.Model):
