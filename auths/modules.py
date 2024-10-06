@@ -44,3 +44,6 @@ from wishlist.serializers import WishlistSerializer
 from customer.serializers import CustomerSerializer
 from utility.handlers import send_sms
 from django.conf import settings
+import random
+from .models import UserProfile
+

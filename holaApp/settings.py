@@ -14,11 +14,10 @@ SECRET_KEY = 'django-insecure-%isa=p4jpn7ep1dee2)l1xlzk5(r29!_8@^^@&1ev$!-q$z+8^
 # settings.py
 SMS_API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-PRODUCTION = False
+PRODUCTION = True
 
 ALLOWED_HOSTS = ['*', 'hola.syscomatic.com']
 
@@ -45,7 +44,8 @@ INSTALLED_APPS = [
     'reporting',
     'settings',
     'wishlist',
-    'cart'
+    'cart',
+    'dashboard'
 
 ]
 
