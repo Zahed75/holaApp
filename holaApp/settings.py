@@ -184,20 +184,22 @@ MEDIA_ROOT = MEDIA_DIR
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+
 # CSRF and CORS settings
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "https://hola.syscomatic.com"
     "https://holagoadmin.vercel.app",
     "https://holago-customer.vercel.app",
+    "https://hola.syscomatic.com"
 
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://hola.syscomatic.com",
     "https://holagoadmin.vercel.app",
     "https://holago-customer.vercel.app",
+    "https://hola.syscomatic.com"
 ]
 
 # In case you're using HTTPS in production
