@@ -9,6 +9,7 @@ class Customer(models.Model):
     dob = models.DateField(null=True, blank=True)
     email = models.EmailField(max_length=254, unique=True)
     club_points = models.IntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name

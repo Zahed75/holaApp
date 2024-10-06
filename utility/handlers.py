@@ -1,7 +1,5 @@
 import requests
 
-
-
 # def send_sms(phone_number, message, api_key):
 #     url = "https://sysadmin.muthobarta.com/api/v1/send-sms"
 #     headers = {
@@ -16,7 +14,7 @@ import requests
 #     response = requests.post(url, json=data, headers=headers)
 #     return response.json()
 #
-
+#
 
 
 from django.conf import settings  # Import settings to fetch the API key
@@ -35,3 +33,4 @@ def send_sms(phone_number, message):
     }
     response = requests.post(url, json=data, headers=headers)
     return response.json()
+
