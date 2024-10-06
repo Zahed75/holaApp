@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from datetime import timedelta
-from turtle import Turtle
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -185,20 +184,22 @@ MEDIA_ROOT = MEDIA_DIR
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+
 # CSRF and CORS settings
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
-    "https://hola.syscomatic.com"
     "https://holagoadmin.vercel.app",
     "https://holago-customer.vercel.app",
+    "https://hola.syscomatic.com"
 
 ]
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://hola.syscomatic.com",
     "https://holagoadmin.vercel.app",
     "https://holago-customer.vercel.app",
+    "https://hola.syscomatic.com"
 ]
 
 # In case you're using HTTPS in production
