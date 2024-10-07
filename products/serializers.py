@@ -6,7 +6,7 @@ from django.conf import settings
 class InventorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Inventory
-        fields = ['size', 'quantity', 'barCode', 'available']
+        fields = ['id','size', 'quantity', 'barCode', 'available']
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
