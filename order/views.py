@@ -6,11 +6,11 @@ from .modules import *
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-
 def create_order(request):
     try:
         user = request.user
         shipping_address_id = request.data.get('shipping_address_id')
+        payment_method = request.data.get('payment_method', 'cash_on_delivery')  # Default to 'cash_on_delivery' if not provided
         coupon_code = request.data.get('coupon_code', None)
         items = request.data.get('items', [])
         shipping_cost = request.data.get('shipping_cost')
@@ -44,6 +44,7 @@ def create_order(request):
             shipping_address=shipping_address,
             coupon_code=coupon,
             shipping_cost=Decimal(shipping_cost),
+            payment_method=payment_method,  # Save the payment method
             order_id=order_id
         )
 
@@ -55,7 +56,6 @@ def create_order(request):
             color = item.get('color')
 
             try:
-
                 product = Product.objects.get(id=product_id)
                 inventory = Inventory.objects.get(product=product, size=size)
                 if inventory.quantity < quantity:
@@ -97,6 +97,7 @@ def create_order(request):
         order_details = {
             "order_id": order.order_id,  # Return the custom order ID
             "user": order.user.username,
+            "payment_method": order.payment_method,  # Return payment method
             "shipping_address": {
                 "name": shipping_address.name,
                 "phone_number": shipping_address.phone_number,
@@ -111,8 +112,8 @@ def create_order(request):
                 {
                     "product_id": item.product.id,
                     "product_name": item.product.productName,
-                    "size": inventory.size,
-                    "color": product.color,
+                    "size": item.size,
+                    "color": item.color,
                     "quantity": item.quantity,
                     "price": item.price,
                 } for item in order.order_items.all()
