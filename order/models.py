@@ -17,9 +17,15 @@ class Order(models.Model):
         ('canceled', 'Canceled'),
     ]
 
+    PAYMENT_METHOD_CHOICES = [
+        ('cash_on_delivery', 'Cash on Delivery'),
+        ('digital_payment', 'Digital Payment'),
+    ]
+
     user = models.ForeignKey(User, related_name='orders', on_delete=models.CASCADE)
     order_id = models.CharField(max_length=10, unique=True, editable=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='cash_on_delivery')
     shipping_address = models.ForeignKey(ShippingAddress, related_name='orders', on_delete=models.CASCADE)
     shipping_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
@@ -28,6 +34,11 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     coupon_code = models.ForeignKey(Discount, on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
+
+    def __str__(self):
+        return f'Order {self.id} by {self.user.username}'
+
+    # Other methods remain unchanged...
 
     def __str__(self):
         return f'Order {self.id} by {self.user.username}'
