@@ -68,15 +68,13 @@ def add_inventory(request, id):
     try:
         # Fetch the product using the provided ID
         product = Product.objects.get(id=id)
-        
-        # Update the payload with the product reference
-        payload = request.data.copy()
-        payload['product'] = product.id
 
-        data_serializer = InventorySerializer(data=payload)
-        
+        # Use the request data directly (no need to modify payload)
+        data_serializer = InventorySerializer(data=request.data)
+
         if data_serializer.is_valid():
-            data_serializer.save()
+            # Save the serializer data, passing the product instance explicitly
+            data_serializer.save(product=product)
             return Response({
                 'code': status.HTTP_200_OK,
                 'message': "Inventory added successfully",
@@ -88,7 +86,7 @@ def add_inventory(request, id):
                 'message': "Invalid data",
                 'errors': data_serializer.errors,
             })
-    
+
     except Product.DoesNotExist:
         return Response({
             'code': status.HTTP_404_NOT_FOUND,
@@ -164,36 +162,46 @@ def update_product(request, id):
 
 
 
-
-
-
-
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-
-def update_inventory(request,id):
-
+def update_inventory(request, id):
     try:
+        # Fetch the inventory item by id
         inventory = Inventory.objects.get(id=id)
-        serializers = InventorySerializer(inventory,data=request.data,partial=True)
-        if not serializers.is_valid():
-            serializers.save()
+
+        # Create a serializer instance with the existing inventory and request data (partial update)
+        serializer = InventorySerializer(inventory, data=request.data, partial=True)
+
+        # Check if the data is valid
+        if not serializer.is_valid():
             return Response({
-                 'status': 400,
-                'payload': serializers.errors, 
-                'message': 'Something Went Wrong'
-            })
-        serializers.save()
+                'status': 400,
+                'payload': serializer.errors,
+                'message': 'Invalid data. Please fix the errors.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # If valid, save the updated inventory
+        serializer.save()
+
         return Response({
-            'status': 200, 
-            'payload': serializers.data,
-            'message': "Inventroy updated successfully"
-        })
+            'status': 200,
+            'payload': serializer.data,
+            'message': "Inventory updated successfully"
+        }, status=status.HTTP_200_OK)
+
+    except Inventory.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': "Inventory item not found"
+        }, status=status.HTTP_404_NOT_FOUND)
+
     except Exception as e:
-         return Response({
+        return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
-        })
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 
