@@ -234,10 +234,10 @@ def get_order_details(request, order_id):
         # Fetch the order using the order_id
         order_details = Order.objects.get(order_id=order_id)
 
-        # Serialize the order details, including customer information
+        # Serialize the order details, including customer and product information
         serializer = OrderSerializer(order_details)
 
-        # Return successful response with order data, including customer info
+        # Return successful response with order data, including customer and product info
         return Response({
             "code": status.HTTP_200_OK,
             "message": "Order details retrieved successfully",
