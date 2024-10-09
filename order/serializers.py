@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import *
 from decimal import Decimal
-
+from customer.serializers import *
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = OrderItem
         fields = ['product', 'quantity', 'price','size', 'color']
@@ -12,7 +13,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True)
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    user = CustomerSerializer(source='user.customer')
 
     class Meta:
         model = Order
@@ -41,3 +42,4 @@ class OrderSerializer(serializers.ModelSerializer):
 
         order.save()
         return order
+

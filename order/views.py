@@ -166,7 +166,7 @@ def get_orders(request):
     except Exception as e:
         return Response({
             "code": 500, "message": str(e)},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            status=status.HTTP_400_BAD_REQUEST
         )
 
 
@@ -229,17 +229,15 @@ def update_order_status(request):
 
 
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
 def get_order_details(request, order_id):
     try:
         # Fetch the order using the order_id
         order_details = Order.objects.get(order_id=order_id)
-        print(order_details.order_id)
 
-        # Serialize the order details
+        # Serialize the order details, including customer information
         serializer = OrderSerializer(order_details)
 
-        # Return successful response with order data
+        # Return successful response with order data, including customer info
         return Response({
             "code": status.HTTP_200_OK,
             "message": "Order details retrieved successfully",
