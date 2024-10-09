@@ -3,6 +3,61 @@ from .modules import *
 
 
 
+#
+# @api_view(['POST'])
+# @parser_classes([MultiPartParser])
+# @permission_classes([IsAuthenticated])
+# def add_product(request):
+#     try:
+#         # Handle category IDs
+#         category_ids = request.data.get('category', '')
+#         category_ids_list = [int(id.strip()) for id in category_ids.split(',')] if category_ids else []
+#
+#         # Fetch categories based on the list of IDs
+#         categories = Category.objects.filter(id__in=category_ids_list)
+#
+#         # Create the product instance
+#         product = Product.objects.create(
+#             productName=request.data.get('productName'),
+#             productDescription=request.data.get('productDescription'),
+#             seoTitle=request.data.get('seoTitle'),
+#             seoDescription=request.data.get('seoDescription'),
+#             productShortDescription=request.data.get('productShortDescription'),
+#             color=request.data.get('color'),
+#             regularPrice=request.data.get('regularPrice'),
+#             salePrice=request.data.get('salePrice'),
+#             saleStart=request.data.get('saleStart'),
+#             saleEnd=request.data.get('saleEnd'),
+#             fabric=request.data.get('fabric'),
+#             weight=request.data.get('weight'),
+#             dimension_length=request.data.get('dimension_length'),
+#             dimension_width=request.data.get('dimension_width'),
+#             dimension_height=request.data.get('dimension_height'),
+#             sizeCharts=request.FILES.get('sizeCharts'),  # Handle sizeCharts image upload
+#             featureImage=request.FILES.get('featureImage')  # Handle feature image upload
+#         )
+#
+#         # Set categories for the product
+#         product.category.set(categories)
+#
+#         # Handle gallery image uploads for ProductImage
+#         images = request.FILES.getlist('images')
+#         for image in images:
+#             ProductImage.objects.create(product=product, image=image, image_type='gallery')
+#
+#         # Serialize the product with images
+#         product_data = ProductSerializer(product).data
+#
+#         return JsonResponse({
+#             'message': 'Product added successfully!',
+#             'product': product_data
+#         }, status=201)
+#
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)}, status=500)
+
+
+
 
 @api_view(['POST'])
 @parser_classes([MultiPartParser])
@@ -16,6 +71,9 @@ def add_product(request):
         # Fetch categories based on the list of IDs
         categories = Category.objects.filter(id__in=category_ids_list)
 
+        # Get color input as a comma-separated string
+        colors = request.data.get('color', '')  # Expecting a string like "Red,Pink"
+
         # Create the product instance
         product = Product.objects.create(
             productName=request.data.get('productName'),
@@ -23,7 +81,7 @@ def add_product(request):
             seoTitle=request.data.get('seoTitle'),
             seoDescription=request.data.get('seoDescription'),
             productShortDescription=request.data.get('productShortDescription'),
-            color=request.data.get('color'),
+            color=colors,  # Store colors directly as a string
             regularPrice=request.data.get('regularPrice'),
             salePrice=request.data.get('salePrice'),
             saleStart=request.data.get('saleStart'),
@@ -55,7 +113,6 @@ def add_product(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
 
 
 

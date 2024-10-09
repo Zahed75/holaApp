@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from turtle import Turtle
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,7 +18,7 @@ SMS_API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
 
 DEBUG = True
 
-PRODUCTION = False
+PRODUCTION = True
 
 ALLOWED_HOSTS = ['*', 'hola.syscomatic.com']
 
