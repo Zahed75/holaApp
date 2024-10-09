@@ -2,9 +2,10 @@ from rest_framework import serializers
 from .models import *
 from decimal import Decimal
 from customer.serializers import *
-
+from products.serializers import *
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
 
     class Meta:
         model = OrderItem
@@ -12,7 +13,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_items = OrderItemSerializer(many=True)
+    order_items = OrderItemSerializer(many=True,read_only=True)
     user = CustomerSerializer(source='user.customer')
 
     class Meta:
