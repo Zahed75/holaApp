@@ -1,7 +1,6 @@
 from auths.models import UserProfile
 from products.models import Inventory
 from .modules import *
-from sslcommerz_lib import SSLCOMMERZ
 
 
 
