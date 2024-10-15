@@ -24,5 +24,6 @@ referencing==0.35.1
 requests==2.32.3
 rpds-py==0.20.0
 sqlparse==0.5.1
+sslcommerz-lib==1.0
 uritemplate==4.1.1
 urllib3==2.2.2
