@@ -1,7 +1,7 @@
 from auths.models import UserProfile
 from products.models import Inventory
 from .modules import *
-
+from sslcommerz_lib import SSLCOMMERZ
 
 
 
@@ -355,7 +355,7 @@ def payment_success(request):
     val_id = request.POST.get('val_id')
     tran_id = request.POST.get('tran_id')
 
-    validation_url = f"https://securepay.sslcommerz.com/validator/api/validationserverAPI.php?val_id={val_id}&store_id={STORE_ID}&store_passwd={STORE_PASSWORD}&format=json"
+    validation_url = f"https://securepay.sslcommerz.com/validator/api/validationserverAPI.php?val_id={val_id}&store_id={store_id}&store_passwd={store_pass}&format=json"
 
     # Validate payment with SSLCommerz
     try:
