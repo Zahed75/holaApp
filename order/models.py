@@ -34,7 +34,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     coupon_code = models.ForeignKey(Discount, on_delete=models.CASCADE, related_name='orders', null=True, blank=True)
-
+    transaction_id = models.CharField(max_length=255, null=True, blank=True)
     def __str__(self):
         return f'Order {self.id} by {self.user.username}'
 

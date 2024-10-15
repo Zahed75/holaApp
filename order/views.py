@@ -1,6 +1,8 @@
 from auths.models import UserProfile
 from products.models import Inventory
 from .modules import *
+from sslcommerz_lib import SSLCOMMERZ
+
 
 
 
@@ -257,3 +259,182 @@ def get_order_details(request, order_id):
             "code": status.HTTP_400_BAD_REQUEST,
             "message": str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+store_id = "holacombdlive"
+store_pass = "5F5C5C6D2F7DC46431"
+ssl_base_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php"
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def initiate_payment(request, order_id):
+    try:
+        # Fetch the order using the order_id and ensure it belongs to the logged-in user
+        order = Order.objects.get(order_id=order_id, user=request.user)
+
+        # Check if the order is in a valid status to proceed with the payment
+        if order.status != 'pending':
+            return Response({
+                "status": "failed",
+                "message": f"Order status is '{order.status}'. Only 'pending' orders can proceed to payment."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Generate a unique transaction ID
+        tran_id = str(uuid.uuid4())
+
+        # Create the post_data for SSLCommerz
+        post_data = {
+            'store_id': store_id,
+            'store_pass': store_pass,  # Correct key for store password
+            'total_amount': str(order.grand_total),  # Amount to be paid
+            'currency': "BDT",
+            'tran_id': tran_id,  # Unique transaction ID
+            'success_url': "https://hola.syscomatic.com/payment-success/",
+            'fail_url': "https://hola.syscomatic.com/payment-fail/",
+            'cancel_url': "https://hola.syscomatic.com/payment-cancel/",
+            'cus_name': request.user.username,
+            'cus_email': request.user.email,
+            'cus_add1': order.shipping_address.address,
+            'cus_city': order.shipping_address.city,
+            'cus_country': "Bangladesh",
+            'cus_phone': order.shipping_address.phone_number,
+            'shipping_method': "NO",
+            'product_name': "Order Payment",
+            'product_category': "Ecommerce",
+            'product_profile': "general",
+        }
+
+        # Initialize SSLCommerz
+        sslcz = SSLCOMMERZ({'store_id': store_id, 'store_pass': store_pass, 'issandbox': False})
+
+        # Make payment initialization call using the correct method
+        response = sslcz.createSession(post_data)  # Correct method name
+
+        if response['status'] == 'SUCCESS':
+            # Update the order with transaction ID
+            order.transaction_id = tran_id
+            order.status = 'processing'  # Set the status to processing
+            order.save()
+
+            # Return success with the payment gateway URL
+            return Response({
+                "status": "success",
+                "payment_url": response['GatewayPageURL']
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "status": "failed",
+                "message": "Payment initiation failed."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Order.DoesNotExist:
+        return Response({
+            "status": "failed",
+            "message": "Order not found."
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({
+            "status": "failed",
+            "message": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+
+
+
+
+
+
+@api_view(['POST'])
+def payment_success(request):
+    val_id = request.POST.get('val_id')
+    tran_id = request.POST.get('tran_id')
+
+    validation_url = f"https://securepay.sslcommerz.com/validator/api/validationserverAPI.php?val_id={val_id}&store_id={STORE_ID}&store_passwd={STORE_PASSWORD}&format=json"
+
+    # Validate payment with SSLCommerz
+    try:
+        validation_response = requests.get(validation_url)
+        validation_data = validation_response.json()
+
+        if validation_data['status'] == 'VALID':
+            try:
+                # Fetch the order using the transaction ID
+                order = Order.objects.get(transaction_id=tran_id)
+
+                # Update the order status
+                order.status = 'shipped'  # Payment successful, mark as shipped
+                order.save()
+
+                return Response({
+                    "status": "success",
+                    "message": "Payment was successful and order updated.",
+                    "order_id": order.order_id,
+                    "grand_total": order.grand_total,
+                    "status": order.status
+                }, status=status.HTTP_200_OK)
+
+            except Order.DoesNotExist:
+                return Response({
+                    "status": "failed",
+                    "message": "Order not found."
+                }, status=status.HTTP_404_NOT_FOUND)
+
+        else:
+            return Response({
+                "status": "failed",
+                "message": "Payment validation failed."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({
+            "status": "failed",
+            "message": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+@api_view(['POST'])
+def payment_fail(request):
+    tran_id = request.POST.get('tran_id')
+
+    try:
+        # Fetch all orders with the matching transaction ID
+        orders = Order.objects.filter(transaction_id=tran_id)
+
+        # Check if any orders are found
+        if orders.exists():
+            canceled_orders = []
+            for order in orders:
+                order.status = 'canceled'  # Payment failed, mark as canceled
+                order.save()
+
+                # Add the canceled order details to the response
+                canceled_orders.append({
+                    "order_id": order.order_id,
+                    "grand_total": order.grand_total,
+                    "status": order.status
+                })
+
+            return Response({
+                "status": "failed",
+                "message": "Payment failed, all matching orders canceled.",
+                "orders": canceled_orders
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "status": "failed",
+                "message": "Order not found."
+            }, status=status.HTTP_404_NOT_FOUND)
+
+    except Exception as e:
+        return Response({
+            "status": "failed",
+            "message": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
