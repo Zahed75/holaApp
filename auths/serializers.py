@@ -4,36 +4,66 @@ from .models import UserProfile
 
 
 
+# class UserSerializer(serializers.ModelSerializer):
+#     # Fetch phone_number and role from the related UserProfile model
+#     phone_number = serializers.SerializerMethodField()
+#     role = serializers.SerializerMethodField()
+#     manager_id = serializers.SerializerMethodField()  # Changed from unique_user_id to manager_id
+#
+#     class Meta:
+#         model = User
+#         fields = ['id', 'first_name', 'last_name', 'email', 'username', 'phone_number', 'role', 'manager_id']
+#
+#     def get_phone_number(self, obj):
+#         # Get the phone_number from the related UserProfile
+#         try:
+#             return obj.userprofile.phone_number
+#         except UserProfile.DoesNotExist:
+#             return None
+#
+#     def get_role(self, obj):
+#         # Get the role from the related UserProfile
+#         try:
+#             return obj.userprofile.role
+#         except UserProfile.DoesNotExist:
+#             return None
+#
+#     def get_manager_id(self, obj):
+#         # Get the unique_user_id from the related UserProfile, but call it manager_id in the response
+#         try:
+#             return obj.userprofile.unique_user_id
+#         except UserProfile.DoesNotExist:
+#             return None
+#
+#
+
+
 
 
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # Fetch phone_number and role from the related UserProfile model
     phone_number = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
-    manager_id = serializers.SerializerMethodField()  # Changed from unique_user_id to manager_id
+    manager_id = serializers.SerializerMethodField()  # Alias for unique_user_id
 
     class Meta:
         model = User
         fields = ['id', 'first_name', 'last_name', 'email', 'username', 'phone_number', 'role', 'manager_id']
 
     def get_phone_number(self, obj):
-        # Get the phone_number from the related UserProfile
         try:
             return obj.userprofile.phone_number
         except UserProfile.DoesNotExist:
             return None
 
     def get_role(self, obj):
-        # Get the role from the related UserProfile
         try:
             return obj.userprofile.role
         except UserProfile.DoesNotExist:
             return None
 
     def get_manager_id(self, obj):
-        # Get the unique_user_id from the related UserProfile, but call it manager_id in the response
         try:
             return obj.userprofile.unique_user_id
         except UserProfile.DoesNotExist:

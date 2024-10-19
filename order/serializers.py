@@ -15,11 +15,20 @@ class OrderItemSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     order_items = OrderItemSerializer(many=True,read_only=True)
     user = CustomerSerializer(source='user.customer')
+    shipping_address = ShippingAddressSerializer(read_only=True)
+
+    # class Meta:
+    #     model = Order
+    #     fields = ['order_id', 'id', 'user', 'status', 'payment_method', 'shipping_cost', 'total_price', 'vat', 'grand_total', 'order_items',
+    #               'created_at', 'updated_at']
 
     class Meta:
         model = Order
-        fields = ['order_id', 'id', 'user', 'status', 'payment_method', 'shipping_cost', 'total_price', 'vat', 'grand_total', 'order_items',
-                  'created_at', 'updated_at']
+        fields = [
+            'order_id', 'id', 'user', 'status', 'payment_method', 'shipping_cost',
+            'total_price', 'vat', 'grand_total', 'order_items', 'shipping_address',
+            'created_at', 'updated_at'
+        ]
 
     def create(self, validated_data):
         order_items_data = validated_data.pop('order_items')
@@ -44,3 +53,10 @@ class OrderSerializer(serializers.ModelSerializer):
         order.save()
         return order
 
+
+
+
+class ShippingAddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = ['name', 'phone_number', 'address', 'area', 'street', 'city', 'state', 'zip_code']

@@ -13,7 +13,7 @@ MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 SECRET_KEY = 'django-insecure-%isa=p4jpn7ep1dee2)l1xlzk5(r29!_8@^^@&1ev$!-q$z+8^'
 
 # settings.py
-SMS_API_KEY = 'dbf5ae53b49fdf65ac01f09ef7385686ac42ea4d'
+SMS_API_KEY = '3cbe6feb4dc1d795ce934790b238727b013f542a'
 
 
 DEBUG = True

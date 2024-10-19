@@ -232,13 +232,8 @@ def update_order_status(request):
 @api_view(['GET'])
 def get_order_details(request, order_id):
     try:
-        # Fetch the order using the order_id
         order_details = Order.objects.get(order_id=order_id)
-
-        # Serialize the order details, including customer and product information
         serializer = OrderSerializer(order_details)
-
-        # Return successful response with order data, including customer and product info
         return Response({
             "code": status.HTTP_200_OK,
             "message": "Order details retrieved successfully",
@@ -246,14 +241,13 @@ def get_order_details(request, order_id):
         }, status=status.HTTP_200_OK)
 
     except Order.DoesNotExist:
-        # Specific exception for when the order does not exist
+
         return Response({
             "code": status.HTTP_404_NOT_FOUND,
             "message": "Order not found."
         }, status=status.HTTP_404_NOT_FOUND)
 
     except Exception as e:
-        # Handle any other exceptions
         return Response({
             "code": status.HTTP_400_BAD_REQUEST,
             "message": str(e)

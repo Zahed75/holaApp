@@ -6,6 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="95e6d269-76f8-41cb-8858-253ecc3967ae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auths/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/auths/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auths/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/auths/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discount/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/discount/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/discount/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/discount/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/holaApp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/holaApp/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/order/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/order/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/order/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -137,7 +143,9 @@
       <workItem from="1728286741532" duration="67000" />
       <workItem from="1728309664795" duration="14911000" />
       <workItem from="1728725060335" duration="1535000" />
-      <workItem from="1728997352082" duration="10964000" />
+      <workItem from="1728997352082" duration="11271000" />
+      <workItem from="1729094451270" duration="1477000" />
+      <workItem from="1729327124068" duration="7816000" />
     </task>
     <servers />
   </component>
