@@ -303,16 +303,16 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 @api_view(['GET'])
 def all_users(request):
     try:
+        # Get all users who have 'admin' or 'outlet_manager' role, including those without a UserProfile (admins might not have one)
+        all_users = User.objects.filter(userprofile__role__in=['admin', 'outlet_manager']).union(
+            User.objects.filter(is_superuser=True)  # Include superusers/admins
+        )
 
-        all_users = User.objects.exclude(id__in=Customer.objects.values('user_id'))
-
-        # Serialize the filtered list of users
-        data_serializer = UserSerializer(all_users, many=True, context={'request': request})
+        # Serialize the users
+        data_serializer = UserSerializer(all_users, many=True)
 
         return Response({
             'code': status.HTTP_200_OK,

@@ -7,11 +7,10 @@ from .modules import *
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-
 def add_discount(request):
     try:
         payload = request.data
-        payload['user'] = request.user.id
+        payload['user'] = request.user.id  # Add the current user to the payload
         data_serializer = DiscountSerializer(data=payload, context={'request': request})
 
         if data_serializer.is_valid():
@@ -28,13 +27,15 @@ def add_discount(request):
                 'errors': data_serializer.errors,
             })
 
-
-
     except Exception as e:
         return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+
+
 
 
 

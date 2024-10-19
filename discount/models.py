@@ -1,4 +1,3 @@
-# discount/models.py
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
@@ -9,6 +8,7 @@ class Discount(models.Model):
     coupon_amount = models.DecimalField(max_digits=10, decimal_places=2, help_text="Discount amount")
     allow_free_shipping = models.BooleanField(default=False, help_text="Allow free shipping?")
     coupon_expiry = models.DateField(null=True, blank=True, help_text="Expiry date of the coupon")
+    coupon_expiry_time = models.DateTimeField(null=True, blank=True, help_text="Expiry date and time of the coupon")  # New field
     minimum_spend = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], null=True, blank=True, help_text="Minimum spend to apply coupon")
     maximum_spend = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], null=True, blank=True, help_text="Maximum spend to apply coupon")
     individual_use_only = models.BooleanField(default=False, help_text="If true, coupon cannot be used with other coupons.")
