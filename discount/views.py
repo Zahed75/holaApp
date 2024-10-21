@@ -87,25 +87,34 @@ def all_discount(request):
         })
 
 
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-
-def get_discount_by_id(request,id):
+def get_discount_by_id(request, id):
     try:
         discount = Discount.objects.get(id=id)
-        data_serializer = DiscountSerializer(discount,many=False)
-        return  Response({
+        data_serializer = DiscountSerializer(discount, many=False)
+        return Response({
             'code': status.HTTP_200_OK,
             'message': 'Data retrieved successfully',
             'data': data_serializer.data
         })
 
+    except Discount.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Discount not found'
+        }, status=status.HTTP_404_NOT_FOUND)
 
     except Exception as e:
         return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         })
+
+
+
 
 
 @api_view(['DELETE'])

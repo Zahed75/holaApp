@@ -13,6 +13,7 @@ class Discount(models.Model):
     maximum_spend = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)], null=True, blank=True, help_text="Maximum spend to apply coupon")
     individual_use_only = models.BooleanField(default=False, help_text="If true, coupon cannot be used with other coupons.")
     exclude_sale_items = models.BooleanField(default=False, help_text="Exclude items on sale?")
+    included_products = models.ManyToManyField('products.Product', blank=True, related_name='included_products', help_text="Products included in coupon usage")  # New field
     excluded_products = models.ManyToManyField('products.Product', blank=True, help_text="Products excluded from coupon usage")
     included_categories = models.ManyToManyField('category.Category', related_name='included_discounts', blank=True, help_text="Categories to include")
     excluded_categories = models.ManyToManyField('category.Category', related_name='excluded_discounts', blank=True, help_text="Categories to exclude")
