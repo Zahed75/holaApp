@@ -41,11 +41,19 @@ def add_discount(request):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-
-def edit_discount(request,id):
+def edit_discount(request, id):
     try:
         discountObj = Discount.objects.get(id=id)
-        serializer = DiscountSerializer(discountObj,data=request.data,partial=True,context={'request':request})
+        data = request.data
+
+        # Handle Many-to-Many fields separately
+        included_products = data.pop('included_products', None)
+        excluded_products = data.pop('excluded_products', None)
+        included_categories = data.pop('included_categories', None)
+        excluded_categories = data.pop('excluded_categories', None)
+
+        # Partial update for other fields
+        serializer = DiscountSerializer(discountObj, data=data, partial=True, context={'request': request})
 
         if not serializer.is_valid():
             return Response({
@@ -53,18 +61,38 @@ def edit_discount(request,id):
                 'payload': serializer.errors,
                 'message': 'Something Went Wrong'
             })
+
         serializer.save()
+
+        # Handle updating Many-to-Many fields
+        if included_products is not None:
+            discountObj.included_products.set(included_products)  # Update included_products
+        if excluded_products is not None:
+            discountObj.excluded_products.set(excluded_products)  # Update excluded_products
+        if included_categories is not None:
+            discountObj.included_categories.set(included_categories)  # Update included_categories
+        if excluded_categories is not None:
+            discountObj.excluded_categories.set(excluded_categories)  # Update excluded_categories
+
         return Response({
             'status': 200,
             'payload': serializer.data,
             'message': "Discount updated successfully"
         })
 
+    except Discount.DoesNotExist:
+        return Response({
+            'status': 404,
+            'message': 'Discount not found'
+        }, status=status.HTTP_404_NOT_FOUND)
+
     except Exception as e:
         return Response({
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
-        })
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 
