@@ -12,7 +12,7 @@ class Product(models.Model):
     productShortDescription = models.TextField(max_length=5000)
     color = models.CharField(max_length=100, verbose_name='Color')
 
-    # General Section
+
     regularPrice = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Regular Price')
     salePrice = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Sale Price', null=True, blank=True)
     saleStart = models.DateTimeField(verbose_name='Sale Start', null=True, blank=True)

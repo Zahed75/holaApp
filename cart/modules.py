@@ -7,5 +7,7 @@ from products.models import Product
 
 from .serializers import CartSerializer
 from rest_framework.views import APIView
-
+from django.db.models import Sum
 from customer.models import *
+from discount.models import *
+from auths.models import UserProfile

@@ -266,29 +266,25 @@ ssl_base_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php"
 @permission_classes([IsAuthenticated])
 def initiate_payment(request, order_id):
     try:
-        # Fetch the order using the order_id and ensure it belongs to the logged-in user
         order = Order.objects.get(order_id=order_id, user=request.user)
 
-        # Check if the order is in a valid status to proceed with the payment
         if order.status != 'pending':
             return Response({
                 "status": "failed",
                 "message": f"Order status is '{order.status}'. Only 'pending' orders can proceed to payment."
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Generate a unique transaction ID
         tran_id = str(uuid.uuid4())
 
-        # Create the post_data for SSLCommerz
         post_data = {
             'store_id': store_id,
-            'store_pass': store_pass,  # Correct key for store password
-            'total_amount': str(order.grand_total),  # Amount to be paid
+            'store_pass': store_pass,
+            'total_amount': str(order.grand_total),
             'currency': "BDT",
-            'tran_id': tran_id,  # Unique transaction ID
-            'success_url': "https://hola.syscomatic.com/payment-success/",
-            'fail_url': "https://hola.syscomatic.com/payment-fail/",
-            'cancel_url': "https://hola.syscomatic.com/payment-cancel/",
+            'tran_id': tran_id,
+            'success_url': "http://localhost:3000/profile?screen=2&isPaymentSuccess=true",
+            'fail_url': "http://localhost:3000/payment?address=2&isPaymentSuccess=false",
+            'cancel_url': "http://localhost:3000/payment?address=2&isPaymentSuccess=false",
             'cus_name': request.user.username,
             'cus_email': request.user.email,
             'cus_add1': order.shipping_address.address,
@@ -301,19 +297,17 @@ def initiate_payment(request, order_id):
             'product_profile': "general",
         }
 
-        # Initialize SSLCommerz
         sslcz = SSLCOMMERZ({'store_id': store_id, 'store_pass': store_pass, 'issandbox': False})
 
-        # Make payment initialization call using the correct method
-        response = sslcz.createSession(post_data)  # Correct method name
+
+        response = sslcz.createSession(post_data)
 
         if response['status'] == 'SUCCESS':
-            # Update the order with transaction ID
             order.transaction_id = tran_id
-            order.status = 'processing'  # Set the status to processing
+            order.status = 'processing'
             order.save()
 
-            # Return success with the payment gateway URL
+
             return Response({
                 "status": "success",
                 "payment_url": response['GatewayPageURL']

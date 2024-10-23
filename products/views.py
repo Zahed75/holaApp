@@ -123,14 +123,13 @@ def add_product(request):
 @permission_classes([IsAuthenticated])
 def add_inventory(request, id):
     try:
-        # Fetch the product using the provided ID
+
         product = Product.objects.get(id=id)
 
-        # Use the request data directly (no need to modify payload)
         data_serializer = InventorySerializer(data=request.data)
 
         if data_serializer.is_valid():
-            # Save the serializer data, passing the product instance explicitly
+
             data_serializer.save(product=product)
             return Response({
                 'code': status.HTTP_200_OK,
