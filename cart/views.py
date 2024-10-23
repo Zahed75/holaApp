@@ -163,3 +163,52 @@ def get_all_carts_by_id(request, customer_id):
             'code': status.HTTP_400_BAD_REQUEST,
             'message': str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def apply_coupon(request):
+    coupon_code = request.data.get('coupon_code')
+
+    if not coupon_code:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': 'Coupon code is required.'
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+    user = request.user  # Get the user from the token
+    try:
+        customer = Customer.objects.get(user=user)
+    except Customer.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Customer not found.'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        discount = Discount.objects.get(code=coupon_code)
+
+        cart_items = Cart.objects.filter(customer=customer)
+
+
+        total_discounted_price = 0
+        for cart_item in cart_items:
+            product_price = cart_item.product.salePrice if cart_item.product.on_sale else cart_item.product.regularPrice
+
+            discounted_price = product_price - discount.coupon_amount
+            total_discounted_price += discounted_price * cart_item.quantity
+
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': 'Coupon applied successfully.',
+            'total_discounted_price': total_discounted_price
+        }, status=status.HTTP_200_OK)
+
+    except Discount.DoesNotExist:
+        return Response({
+            'code': status.HTTP_404_NOT_FOUND,
+            'message': 'Discount code not found.'
+        }, status=status.HTTP_404_NOT_FOUND)
