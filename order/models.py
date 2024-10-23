@@ -38,37 +38,29 @@ class Order(models.Model):
     def __str__(self):
         return f'Order {self.id} by {self.user.username}'
 
-    # Other methods remain unchanged...
+
 
     def __str__(self):
         return f'Order {self.id} by {self.user.username}'
 
     def calculate_totals(self):
-        """Calculate total price, inclusive VAT, and grand total."""
+
         total_price = sum(item.price * item.quantity for item in self.order_items.all())
-
-        # Calculate VAT from the inclusive price
-        vat_rate = Decimal(0.05)  # 5% VAT rate
-        self.vat = total_price - (total_price / (1 + vat_rate))  # VAT extracted from inclusive total
-
-        # Grand total is just the total price + shipping cost, no additional VAT
+        vat_rate = Decimal(0.05)
+        self.vat = total_price - (total_price / (1 + vat_rate))
         self.total_price = total_price
         self.grand_total = total_price + self.shipping_cost
         self.save()
 
     def save(self, *args, **kwargs):
-        """Override save method to create a unique order ID."""
-        if not self.order_id:  # Check if order_id is not set
+        if not self.order_id:
             self.order_id = self.generate_unique_order_id()
         super().save(*args, **kwargs)
 
     def generate_unique_order_id(self):
-        """Generate a unique order ID in the format 'HLG#XXXXX'."""
         while True:
             random_number = random.randint(10000, 99999)
             order_id = f"HLG#{random_number}"
-
-            # Check if the order_id already exists
             if not Order.objects.filter(order_id=order_id).exists():
                 return order_id
 
