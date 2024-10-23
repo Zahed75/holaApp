@@ -18,7 +18,7 @@ SMS_API_KEY = '3cbe6feb4dc1d795ce934790b238727b013f542a'
 
 DEBUG = True
 
-PRODUCTION = True
+PRODUCTION = False
 
 ALLOWED_HOSTS = ['*', 'hola.syscomatic.com']
 
