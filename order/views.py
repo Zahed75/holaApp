@@ -4,140 +4,6 @@ from .modules import *
 from sslcommerz_lib import SSLCOMMERZ
 
 
-#
-# @api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-# def create_order(request):
-#     try:
-#         user = request.user
-#         shipping_address_id = request.data.get('shipping_address_id')
-#         payment_method = request.data.get('payment_method', 'cash_on_delivery')  # Default to 'cash_on_delivery' if not provided
-#         coupon_code = request.data.get('coupon_code', None)
-#         items = request.data.get('items', [])
-#         shipping_cost = request.data.get('shipping_cost')
-#
-#         # Retrieve the shipping address
-#         try:
-#             shipping_address = ShippingAddress.objects.get(id=shipping_address_id, customer__user=user)
-#         except ShippingAddress.DoesNotExist:
-#             return Response({
-#                 "code": 400,
-#                 "message": "No shipping address found for this customer"
-#             }, status=status.HTTP_400_BAD_REQUEST)
-#
-#         # Retrieve the coupon if provided
-#         coupon = None
-#         if coupon_code:
-#             try:
-#                 coupon = Discount.objects.get(code=coupon_code)
-#             except Discount.DoesNotExist:
-#                 return Response({
-#                     "code": 400,
-#                     "message": "Invalid coupon code"
-#                 }, status=status.HTTP_400_BAD_REQUEST)
-#
-#         # Generate a unique order ID
-#         order_id = generate_unique_order_id()
-#
-#         # Create the order
-#         order = Order.objects.create(
-#             user=user,
-#             shipping_address=shipping_address,
-#             coupon_code=coupon,
-#             shipping_cost=Decimal(shipping_cost),
-#             payment_method=payment_method,  # Save the payment method
-#             order_id=order_id
-#         )
-#
-#         # Loop through each item in the request to create OrderItem entries
-#         for item in items:
-#             product_id = item.get('product_id')
-#             quantity = item.get('quantity')
-#             size = item.get('size')
-#             color = item.get('color')
-#
-#             try:
-#                 product = Product.objects.get(id=product_id)
-#                 inventory = Inventory.objects.get(product=product, size=size)
-#                 if inventory.quantity < quantity:
-#                     return Response({
-#                         "code": 400,
-#                         "message": f"Not enough stock for {product.productName} in size {size}. Available: {inventory.quantity}"
-#                     }, status=status.HTTP_400_BAD_REQUEST)
-#
-#                 # Use sale price if available, otherwise regular price
-#                 price_to_use = product.salePrice if product.salePrice else product.regularPrice
-#
-#                 # Create the order item
-#                 OrderItem.objects.create(
-#                     order=order,
-#                     product=product,
-#                     quantity=quantity,
-#                     price=price_to_use,
-#                     color=color
-#                 )
-#                 inventory.quantity -= quantity
-#                 inventory.save()
-#
-#             except Product.DoesNotExist:
-#                 return Response({
-#                     "code": 400,
-#                     "message": f"Product with ID {product_id} does not exist"
-#                 }, status=status.HTTP_400_BAD_REQUEST)
-#
-#             except Inventory.DoesNotExist:
-#                 return Response({
-#                     "code": 400,
-#                     "message": f"Inventory for product {product.productName} and size {size} does not exist"
-#                 }, status=status.HTTP_400_BAD_REQUEST)
-#
-#         # Calculate the totals for the order (total price, VAT, grand total)
-#         order.calculate_totals()
-#
-#         # Prepare the order details response
-#         order_details = {
-#             "order_id": order.order_id,  # Return the custom order ID
-#             "user": order.user.username,
-#             "payment_method": order.payment_method,  # Return payment method
-#             "shipping_address": {
-#                 "name": shipping_address.name,
-#                 "phone_number": shipping_address.phone_number,
-#                 "address": shipping_address.address,
-#                 "area": shipping_address.area,
-#                 "street": shipping_address.street,
-#                 "city": shipping_address.city,
-#                 "state": shipping_address.state,
-#                 "zip_code": shipping_address.zip_code,
-#             },
-#             "items": [
-#                 {
-#                     "product_id": item.product.id,
-#                     "product_name": item.product.productName,
-#                     "size": item.size,
-#                     "color": item.color,
-#                     "quantity": item.quantity,
-#                     "price": item.price,
-#                 } for item in order.order_items.all()
-#             ],
-#             "shipping_cost": str(order.shipping_cost),
-#             "total_price": str(order.total_price),
-#             "vat": str(order.vat),
-#             "grand_total": str(order.grand_total),
-#             "status": order.status,
-#             "created_at": order.created_at,
-#         }
-#
-#         return Response({
-#             "message": "Order created successfully",
-#             "order_details": order_details
-#         }, status=status.HTTP_201_CREATED)
-#
-#     except Exception as e:
-#         return Response({
-#             "code": 500,
-#             "message": str(e)
-#         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#
 
 
 @api_view(['POST'])
@@ -163,11 +29,10 @@ def create_order(request):
 
         # Retrieve the coupon if provided
         coupon = None
-        use_regular_price = False  # Default is to use salePrice unless coupon applied
+        use_regular_price = True  # Default to using regularPrice whether or not coupon is applied
         if coupon_code:
             try:
                 coupon = Discount.objects.get(code=coupon_code)
-                use_regular_price = True  # Use regularPrice if a coupon is applied
             except Discount.DoesNotExist:
                 return Response({
                     "code": 400,
@@ -206,15 +71,8 @@ def create_order(request):
                         "message": f"Not enough stock for {product.productName} in size {size}. Available: {inventory.quantity}"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                # Determine the price to use based on coupon and sales period
-                if use_regular_price:
-                    price_to_use = product.regularPrice  # Use regular price when coupon is applied
-                else:
-                    current_date = timezone.now()
-                    if product.sale_start <= current_date <= product.sale_end:
-                        price_to_use = product.salePrice
-                    else:
-                        price_to_use = product.regularPrice
+                # Always use regular price, regardless of coupon usage
+                price_to_use = product.regularPrice
 
                 # Calculate the total price of the order
                 total_price += price_to_use * quantity
@@ -436,6 +294,74 @@ ssl_base_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php"
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
+# def initiate_payment(request, order_id):
+#     try:
+#         order = Order.objects.get(order_id=order_id, user=request.user)
+#
+#         if order.status != 'pending':
+#             return Response({
+#                 "status": "failed",
+#                 "message": f"Order status is '{order.status}'. Only 'pending' orders can proceed to payment."
+#             }, status=status.HTTP_400_BAD_REQUEST)
+#
+#         tran_id = str(uuid.uuid4())
+#
+#         post_data = {
+#             'store_id': store_id,
+#             'store_pass': store_pass,
+#             'total_amount': str(order.grand_total),
+#             'currency': "BDT",
+#             'tran_id': tran_id,
+#             'success_url': "http://localhost:3000/profile?screen=2&isPaymentSuccess=true",
+#             'fail_url': "http://localhost:3000/payment?address=2&isPaymentSuccess=false",
+#             'cancel_url': "http://localhost:3000/payment?address=2&isPaymentSuccess=false",
+#             'cus_name': request.user.username,
+#             'cus_email': request.user.email,
+#             'cus_add1': order.shipping_address.address,
+#             'cus_city': order.shipping_address.city,
+#             'cus_country': "Bangladesh",
+#             'cus_phone': order.shipping_address.phone_number,
+#             'shipping_method': "NO",
+#             'product_name': "Order Payment",
+#             'product_category': "Ecommerce",
+#             'product_profile': "general",
+#         }
+#
+#         sslcz = SSLCOMMERZ({'store_id': store_id, 'store_pass': store_pass, 'issandbox': False})
+#
+#
+#         response = sslcz.createSession(post_data)
+#
+#         if response['status'] == 'SUCCESS':
+#             order.transaction_id = tran_id
+#             order.status = 'processing'
+#             order.save()
+#
+#
+#             return Response({
+#                 "status": "success",
+#                 "payment_url": response['GatewayPageURL']
+#             }, status=status.HTTP_200_OK)
+#         else:
+#             return Response({
+#                 "status": "failed",
+#                 "message": "Payment initiation failed."
+#             }, status=status.HTTP_400_BAD_REQUEST)
+#
+#     except Order.DoesNotExist:
+#         return Response({
+#             "status": "failed",
+#             "message": "Order not found."
+#         }, status=status.HTTP_404_NOT_FOUND)
+#
+#     except Exception as e:
+#         return Response({
+#             "status": "failed",
+#             "message": str(e)
+#         }, status=status.HTTP_400_BAD_REQUEST)
+#
+#
+
 def initiate_payment(request, order_id):
     try:
         order = Order.objects.get(order_id=order_id, user=request.user)
@@ -448,15 +374,21 @@ def initiate_payment(request, order_id):
 
         tran_id = str(uuid.uuid4())
 
+        # Dynamically pass the user ID in the success URL
+        user_id = request.user.id
+        success_url = f"http://localhost:3000/profile?screen=2&isPaymentSuccess=true&userId={user_id}"
+        fail_url = "http://localhost:3000/payment?address=2&isPaymentSuccess=false"
+        cancel_url = "http://localhost:3000/payment?address=2&isPaymentSuccess=false"
+
         post_data = {
             'store_id': store_id,
             'store_pass': store_pass,
             'total_amount': str(order.grand_total),
             'currency': "BDT",
             'tran_id': tran_id,
-            'success_url': "http://localhost:3000/profile?screen=2&isPaymentSuccess=true",
-            'fail_url': "http://localhost:3000/payment?address=2&isPaymentSuccess=false",
-            'cancel_url': "http://localhost:3000/payment?address=2&isPaymentSuccess=false",
+            'success_url': success_url,  # Update the success URL with the dynamic user ID
+            'fail_url': fail_url,
+            'cancel_url': cancel_url,
             'cus_name': request.user.username,
             'cus_email': request.user.email,
             'cus_add1': order.shipping_address.address,
@@ -471,14 +403,12 @@ def initiate_payment(request, order_id):
 
         sslcz = SSLCOMMERZ({'store_id': store_id, 'store_pass': store_pass, 'issandbox': False})
 
-
         response = sslcz.createSession(post_data)
 
         if response['status'] == 'SUCCESS':
             order.transaction_id = tran_id
             order.status = 'processing'
             order.save()
-
 
             return Response({
                 "status": "success",
@@ -500,9 +430,7 @@ def initiate_payment(request, order_id):
         return Response({
             "status": "failed",
             "message": str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 
 
