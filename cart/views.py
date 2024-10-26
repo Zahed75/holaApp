@@ -144,7 +144,8 @@ class CartView(APIView):
                 'message': str(e)
             }, status=status.HTTP_400_BAD_REQUEST)
 
-''
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_carts_by_id(request, customer_id):
@@ -208,3 +209,31 @@ def apply_coupon(request):
             'code': status.HTTP_404_NOT_FOUND,
             'message': 'Discount code not found.'
         }, status=status.HTTP_404_NOT_FOUND)
+
+
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def clear_cart_on_order(request):
+    user = request.user
+
+    try:
+        # Check if an order was created successfully
+        if Order.objects.filter(user=user).exists():
+            # Clear all items in the cart for the user
+            Cart.objects.filter(customer=user.customer).delete()
+
+            return Response({
+                "message": "Cart cleared successfully after order creation."
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                "message": "No recent orders found for the user."
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({
+            "code": 500,
+            "message": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
