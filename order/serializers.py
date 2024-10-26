@@ -1,11 +1,7 @@
-from rest_framework import serializers
 from .models import *
 from decimal import Decimal
 from customer.serializers import *
 from products.serializers import *
-
-
-
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
@@ -70,7 +66,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 price = product.regularPrice
             else:
                 current_date = timezone.now()
-                if product.sale_start <= current_date <= product.sale_end:
+                if product.saleStart and product.saleEnd and product.saleStart <= current_date <= product.saleEnd:
                     price = product.salePrice
                 else:
                     price = product.regularPrice
@@ -122,9 +118,6 @@ class OrderSerializer(serializers.ModelSerializer):
         order.save()
 
         return order
-
-
-
 
 
 

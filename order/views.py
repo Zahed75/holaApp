@@ -2,7 +2,7 @@ from auths.models import UserProfile
 from products.models import Inventory
 from .modules import *
 from sslcommerz_lib import SSLCOMMERZ
-
+from django.utils import timezone
 
 
 
@@ -12,11 +12,10 @@ def create_order(request):
     try:
         user = request.user
         shipping_address_id = request.data.get('shipping_address_id')
-        payment_method = request.data.get('payment_method',
-                                          'cash_on_delivery')  # Default to 'cash_on_delivery' if not provided
+        payment_method = request.data.get('payment_method', 'cash_on_delivery')
         coupon_code = request.data.get('coupon_code', None)
         items = request.data.get('items', [])
-        shipping_cost = request.data.get('shipping_cost')
+        shipping_cost = request.data.get('shipping_cost', 0)  # Default to 0 if not provided
 
         # Retrieve the shipping address
         try:
@@ -26,23 +25,21 @@ def create_order(request):
                 "code": 400,
                 "message": "No shipping address found for this customer"
             }, status=status.HTTP_400_BAD_REQUEST)
-
-        # Retrieve the coupon if provided
         coupon = None
-        use_regular_price = True  # Default to using regularPrice whether or not coupon is applied
+        use_regular_price = False
         if coupon_code:
             try:
                 coupon = Discount.objects.get(code=coupon_code)
+                use_regular_price = True
             except Discount.DoesNotExist:
                 return Response({
                     "code": 400,
                     "message": "Invalid coupon code"
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Generate a unique order ID
+
         order_id = generate_unique_order_id()
 
-        # Create the order
         order = Order.objects.create(
             user=user,
             shipping_address=shipping_address,
@@ -52,9 +49,9 @@ def create_order(request):
             order_id=order_id
         )
 
-        total_price = 0  # To track the total price of all items
+        total_price = Decimal(0)
+        vat_rate = Decimal(0.05)
 
-        # Loop through each item in the request to create OrderItem entries
         for item in items:
             product_id = item.get('product_id')
             quantity = item.get('quantity')
@@ -71,13 +68,17 @@ def create_order(request):
                         "message": f"Not enough stock for {product.productName} in size {size}. Available: {inventory.quantity}"
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-                # Always use regular price, regardless of coupon usage
-                price_to_use = product.regularPrice
+                if use_regular_price:
+                    price_to_use = product.regularPrice
+                else:
+                    current_datetime = timezone.now()
+                    if product.saleStart and product.saleEnd and product.saleStart <= current_datetime <= product.saleEnd:
+                        price_to_use = product.salePrice
+                    else:
+                        price_to_use = product.regularPrice
+                item_total_price = price_to_use * quantity
+                total_price += item_total_price
 
-                # Calculate the total price of the order
-                total_price += price_to_use * quantity
-
-                # Create the order item
                 OrderItem.objects.create(
                     order=order,
                     product=product,
@@ -85,8 +86,6 @@ def create_order(request):
                     price=price_to_use,
                     color=color
                 )
-
-                # Update inventory
                 inventory.quantity -= quantity
                 inventory.save()
 
@@ -102,30 +101,21 @@ def create_order(request):
                     "message": f"Inventory for product {product.productName} and size {size} does not exist"
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-        # Apply discount if a coupon was used
+
         discount_amount = 0
         if coupon:
             discount_amount = coupon.coupon_amount
             total_price -= discount_amount
-
-        # Calculate VAT (assuming 5% VAT rate)
-        vat_rate = Decimal(0.05)
-        vat_amount = total_price * vat_rate
-
-        # Calculate grand total (total price + VAT + shipping cost)
-        grand_total = total_price + vat_amount + Decimal(shipping_cost)
-
-        # Update the order with totals
+        vat_amount = total_price * (vat_rate / (1 + vat_rate))
+        grand_total = total_price + Decimal(shipping_cost)
         order.total_price = total_price
         order.vat = vat_amount
         order.grand_total = grand_total
         order.save()
-
-        # Prepare the order details response
         order_details = {
-            "order_id": order.order_id,  # Return the custom order ID
+            "order_id": order.order_id,
             "user": order.user.username,
-            "payment_method": order.payment_method,  # Return payment method
+            "payment_method": order.payment_method,
             "shipping_address": {
                 "name": shipping_address.name,
                 "phone_number": shipping_address.phone_number,
@@ -163,18 +153,15 @@ def create_order(request):
         return Response({
             "code": 500,
             "message": str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        }, status=status.HTTP_400_BAD_REQUEST)
 
 def generate_unique_order_id():
     while True:
         random_number = random.randint(10000, 99999)
         order_id = f"HLG{random_number}"
 
-        # Check if the order_id already exists
         if not Order.objects.filter(order_id=order_id).exists():
             return order_id
-
 
 
 
@@ -199,10 +186,6 @@ def get_orders(request):
             "code": 500, "message": str(e)},
             status=status.HTTP_400_BAD_REQUEST
         )
-
-
-
-
 
 
 @api_view(['PUT'])
@@ -257,8 +240,6 @@ def update_order_status(request):
         }, status=status.status.HTTP_400_BAD_REQUEST)
 
 
-
-
 @api_view(['GET'])
 def get_order_details(request, order_id):
     try:
@@ -284,13 +265,10 @@ def get_order_details(request, order_id):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
-
 store_id = "holacombdlive"
 store_pass = "5F5C5C6D2F7DC46431"
 ssl_base_url = "https://securepay.sslcommerz.com/gwprocess/v4/api.php"
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -377,8 +355,8 @@ def initiate_payment(request, order_id):
         # Dynamically pass the user ID in the success URL
         user_id = request.user.id
         success_url = f"http://localhost:3000/profile?screen=2&isPaymentSuccess=true&userId={user_id}"
-        fail_url = "http://localhost:3000/payment?address=2&isPaymentSuccess=false"
-        cancel_url = "http://localhost:3000/payment?address=2&isPaymentSuccess=false"
+        fail_url = f"http://localhost:3000/payment?address=2&isPaymentSuccess=false&userId={user_id}"
+        cancel_url = f"http://localhost:3000/payment?address=2&isPaymentSuccess=false&userId={user_id}"
 
         post_data = {
             'store_id': store_id,
@@ -433,11 +411,6 @@ def initiate_payment(request, order_id):
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
-
-
 @api_view(['POST'])
 def payment_success(request):
     val_id = request.POST.get('val_id')
@@ -486,7 +459,6 @@ def payment_success(request):
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 @api_view(['POST'])
 def payment_fail(request):
     tran_id = request.POST.get('tran_id')
@@ -522,6 +494,30 @@ def payment_fail(request):
 
     except Exception as e:
         return Response({
-            "status": "failed",
-            "message": str(e)
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_all_orders_by_customer_id(request, customer_id):
+    try:
+
+        customer = get_object_or_404(Customer, id=customer_id)
+        orders = Order.objects.filter(user=customer.user)
+        serializer = OrderSerializer(orders, many=True)
+        return Response({
+            'code': status.HTTP_200_OK,
+            'message': "Get all Orders get Sucessfully",
+            'data': serializer.data
+        })
+
+    except Exception as e:
+        return Response({
+            'code': status.HTTP_400_BAD_REQUEST,
+            'message': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
+

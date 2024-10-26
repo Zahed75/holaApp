@@ -6,7 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="95e6d269-76f8-41cb-8858-253ecc3967ae" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/modules.py" beforeDir="false" afterPath="$PROJECT_DIR$/cart/modules.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cart/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/cart/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cart/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/cart/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/order/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/order/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/order/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/order/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/products/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/products/models.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,7 +148,9 @@
       <workItem from="1729327124068" duration="9294000" />
       <workItem from="1729507087240" duration="17781000" />
       <workItem from="1729593792674" duration="13729000" />
-      <workItem from="1729748437301" duration="81000" />
+      <workItem from="1729748437301" duration="2686000" />
+      <workItem from="1729929201591" duration="5864000" />
+      <workItem from="1729945544663" duration="3369000" />
     </task>
     <servers />
   </component>

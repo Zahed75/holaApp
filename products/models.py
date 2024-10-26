@@ -2,7 +2,7 @@ from category.models import *
 from django.contrib.auth.models import User
 from django.db import models
 from datetime import datetime
-
+from django.utils import timezone
 class Product(models.Model):
     category = models.ManyToManyField(Category, related_name='products')
     productName = models.CharField(max_length=322, verbose_name='Product Name')
@@ -39,10 +39,10 @@ class Product(models.Model):
     def on_sale(self):
         current_time = timezone.now()
         return (
-            self.salePrice is not None and
-            self.salePrice < self.regularPrice and
-            (self.saleStart is None or self.saleStart <= current_time) and
-            (self.saleEnd is None or self.saleEnd >= current_time)
+                self.salePrice is not None and
+                self.salePrice < self.regularPrice and
+                (self.saleStart is None or self.saleStart <= current_time) and
+                (self.saleEnd is None or self.saleEnd >= current_time)
         )
 
 

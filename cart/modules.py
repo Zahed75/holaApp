@@ -11,3 +11,4 @@ from django.db.models import Sum
 from customer.models import *
 from discount.models import *
 from auths.models import UserProfile
+from order.modules import *
